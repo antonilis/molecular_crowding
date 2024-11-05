@@ -1,27 +1,8 @@
 import pandas as pd
 import uncertainties as unc
-import pickle
-
-
-# Function to convert strings with uncertainties to ufloat
-def convert_to_ufloat(value):
-    if isinstance(value, str):  # Check if the value is a string
-        # Normalize the string by replacing "±" and "+-" with spaces
-        value = value.replace('±', ' ').replace('+-', ' ')
-        parts = value.split()  # Split by whitespace
-
-        # Check if we have two parts (nominal and uncertainty)
-        if len(parts) == 2:
-            try:
-                return unc.ufloat(float(parts[0]), float(parts[1]))  # Create ufloat from parts
-            except ValueError:
-                return value  # Return original value if conversion fails
-        else:
-            try:
-                return float(value)  # If it's just a number, convert directly
-            except ValueError:
-                return value  # Return original value if conversion fails
-    return value  # Return as is if it's already a number
+from uncertainties import unumpy as unp
+import numpy as np
+import utils as uts
 
 
 def get_molar_mass(probe):
@@ -94,7 +75,7 @@ for i in range(len(df_nan_rows)):
 final_df = combine_dataframes(df_dic)
 
 for col in final_df.columns:
-    final_df[col] = final_df[col].map(convert_to_ufloat)
+    final_df[col] = final_df[col].map(uts.convert_to_ufloat)
 
 final_df['K [M]'] = 1 / final_df['KD (nM)'] * 10 ** 9
 
@@ -104,10 +85,12 @@ final_df['c [M]'] = final_df['C (g/ml)'] / final_df['molar mass'] * 1000
 
 final_df['monomers number'] = final_df['molar mass'].apply(get_number_of_monomers)
 
+
 class PNAS_data:
 
     def __init__(self):
         self.data = final_df
+        self.coeff = self.fit_coefficients()
 
     def get_probe(self, name):
         mask = self.data['probe'] == name
@@ -115,4 +98,27 @@ class PNAS_data:
 
         return df
 
-    # TODO   fitting, saving, create github
+
+    def fit_coefficients(self):
+        names = self.data['probe'].unique()
+
+        coeff_dict = {}
+        for name in names:
+            x = np.array(self.get_probe(name)['c [M]'], dtype=np.float64)
+            y, y_error = uts.get_float_uncertainty(unp.log(self.get_probe(name)['K [M]']))
+            coeff = np.polyfit(x, y, 2, w=1 / y_error)
+            coeff_dict[name] = coeff
+
+        # Convert the dictionary to a DataFrame
+        coeffs_df = pd.DataFrame.from_dict(coeff_dict, orient='index',
+                                           columns=['a2', 'a1', 'a0'])
+
+        # Reset the index to make 'peg' a column
+        coeffs_df = coeffs_df.reset_index().rename(columns={'index': 'probe'})
+
+        return coeffs_df
+
+
+PNAS = PNAS_data()
+
+#TODO

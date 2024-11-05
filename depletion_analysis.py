@@ -25,7 +25,7 @@ class Depletion:
         return Rg
 
     @staticmethod
-    def calc_Rh(Mmol):
+    def calculate_PEG_Rh(Mmol):
         Rh = 0.145 * (Mmol) ** (0.571) / 10
 
         return Rh
@@ -47,6 +47,7 @@ class Depletion:
     def number_of_monomers(self, Mmas):
         polymer_number = (Mmas - 18.02) / (self.EG_molar_mas - 18.02)  # number of monomers in polymer
         return polymer_number
+
     def calc_free_sodium(self, Mmas, K_complex, concentration):
         polymer_number = self.number_of_monomers(Mmas)  # number of monomers in polymer
 
@@ -86,12 +87,13 @@ class Depletion:
 
         dat['c*'] = self.calc_c_star(dat['Rg [nm]'])
 
-        dat['Rh [nm]'] = self.calc_Rh(dat['molar mas'])
+        dat['Rh [nm]'] = self.calculate_PEG_Rh(dat['molar mas'])
 
         dat['monomers number'] = self.number_of_monomers(dat['molar mas'])
 
         # changing slitghly order of columns for convenience
-        columns = ['peg', 'molar mas', 'mas concentration', 'concentration [M]', 'c*', 'monomers number', 'density', 'Rg [nm]', 'Rh [nm]',
+        columns = ['peg', 'molar mas', 'mas concentration', 'concentration [M]', 'c*', 'monomers number', 'density',
+                   'Rg [nm]', 'Rh [nm]',
                    'K hybr',
                    'K hybr error', 'K complex', 'K  complex error',
                    'G']
@@ -191,6 +193,8 @@ def fit_test(peg):
 
     plt.plot(x, y, label='fit')
     depletion.plot_delta_G(peg)
+
+
 
 
 if __name__ == '__main__':
