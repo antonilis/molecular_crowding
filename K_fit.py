@@ -212,7 +212,7 @@ def K_DNA_DNA_fitting():
                     'crowder': names[i],
                     'wt_%': values[i],
                     'K': f'{fitK1:.0f}±{fitK1err:.0f}',
-                    'D': f'{df['D_[um^2/s]'][0]}±{df['D_err'][0]}'}
+                    'D': f"{df['D_[um^2/s]'][0]}±{df['D_err'][0]}"}
             else:
                 data_out = {
                     'name': base_names[i],
