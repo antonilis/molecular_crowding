@@ -91,7 +91,7 @@ def finalfunfit1(x, K, D):
 
 # Initialize an empty DataFrame to store the results
 K_results = pd.DataFrame(columns=[
-    'name', 'crowder', 'wt_%', 'K', 'D'])
+    'name', 'crowder', 'mass concentration', 'K', 'D'])
 
 # Lists to store extracted names and values
 names = []  # crowder name
@@ -146,17 +146,17 @@ for i in range(len(base_names)):
             data_out = {
                 'name': base_names[i],
                 'crowder': names[i],
-                'wt_%': values[i],
+                'mass concentration': values[i],
                 'K': f'{fitK1:.0f}±{fitK1err:.0f}',
                 'D': f"{df['D_[um^2/s]'][0]}±{df['D_err'][0]}"}
         else:
             data_out = {
                 'name': base_names[i],
                 'crowder': names[i],
-                'wt_%': values[i],
+                'mass concentration': values[i],
                 'K': None,
                 'D': None}
 
         K_results = pd.concat([K_results, pd.DataFrame([data_out])], ignore_index=True)
-        #K_results.to_csv('results/K_DNA-DNA_in_crowder_solutions.csv', index=False)  # Save to a CSV file
+        K_results.to_csv('results/K_DNA-DNA_in_crowder_solutions.csv', index=False)  # Save to a CSV file
 
