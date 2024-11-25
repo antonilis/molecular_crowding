@@ -36,56 +36,43 @@ def fit_polynomial_to_K(data):
 
     return coeffs_df
 
+def fit_coefficients_of_quadratic_fit():
+    data = pd.read_csv('./results/K_DNA-DNA_in_crowder_solutions.csv')
 
-data = pd.read_csv('./results/K_DNA-DNA_in_crowder_solutions.csv')
+    data.dropna(inplace=True)
 
-data.dropna(inplace=True)
+    # changing +- sign to the unc float objects
+    for col in data.columns:
+        data[col] = data[col].map(uts.convert_to_ufloat)
 
-#changing +- sign to the unc float objects
-for col in data.columns:
-    data[col] = data[col].map(uts.convert_to_ufloat)
+    data = pd.merge(data, pd.DataFrame(uts.crowders_properties()), left_on='crowder', right_index=True)
 
-data = pd.merge(data, pd.DataFrame(uts.crowders_properties()), left_on='crowder', right_index=True)
+    density = 1
 
-density = 1
+    data['concentration [M]'] = data['wt_%'] * density / data['MW_[g/mol]'] * 10 #possibly we will modify here the density
 
-data['concentration [M]'] = data['wt_%'] * density / data['MW_[g/mol]'] * 10
+    coefficients = fit_polynomial_to_K(data)
+    coefficients = pd.merge(coefficients, pd.DataFrame(uts.crowders_properties()), left_on='crowder', right_index=True)
 
-coefficients = fit_polynomial_to_K(data)
-coefficients = pd.merge(coefficients, pd.DataFrame(uts.crowders_properties()), left_on='crowder', right_index=True)
+    return coefficients
+
 
 ###########  theretical calculations ##########################
+def calculate_a1_a2_theoretical_values(c0=uts.c0, zi=uts.zi, a=uts.a, Km=uts.Km, reagent_Rg=uts.Rg_ssDNA,
+                                       Temperature=uts.T):
+    alpha = np.sqrt((uts.eps * uts.kb * Temperature) / (2 * uts.Na * uts.qe ** 2))
 
-#
-eps = 8.8541878188 * 10 ** (-12) * 81  # vacuum * water relative permittivity
-Na = 6.02214076 * 10 ** (23)  # avogadro number
-qe = 1.60217663 * 10 ** (-19)  # elementary charge of electrion in Culomb
-kb = 1.380649 * 10 ** (-23)  # boltzman constant
-R = 8.31446261815324  #
-T = 298.15
+    Zi = zi * uts.qe / (4 * np.pi * uts.eps)
 
-Rg_ssDNA = 0.55  # radius of ssDNA, I have chosen this arbitraly
+    numerator = uts.Na * zi * uts.qe * Zi * np.sqrt(c0)
+    denominator = 3 * np.sqrt(6) * (3 * a + 2) ** (3 / 2) * np.e * alpha
 
-# experimental data
-c0 = 35  # concentration of Na+ in mmol which is equal to mol/m^3
-zi = 13  # charge of the ssDNA 13bp
-a = 0.0754 / 0.1754 * 4 + 0.0246 / 0.1754  # the anions part of the ionic strength HPO42- and H2PO4-
-Km = 0.14  # complexation constant of the PEG - Na complexation
+    lambd = numerator / denominator
 
-alpha = np.sqrt((eps * kb * T) / (2 * Na * qe ** 2))
+    theory_a2 = -(4 * a + 2) * lambd / (uts.R * Temperature) * Km ** 2
 
-Zi = zi * qe / (4 * np.pi * eps)
+    theory_a1 = 2 * (5 * a + 3) * lambd / (uts.R * Temperature) * Km
+
+    return theory_a1, theory_a2
 
 
-def calc_lambda():
-    licznik = Na * zi * qe * Zi * np.sqrt(c0)
-    mianownik = 3 * np.sqrt(6) * (3 * a + 2) ** (3 / 2) * np.e * alpha
-
-    return licznik / mianownik
-
-
-lambd = calc_lambda()
-
-theory_a2 = -(4 * a + 2) * lambd / (R * T) * Km ** 2
-
-theory_a1 = 2 * (5 * a + 3) * lambd /(R * T) * Km

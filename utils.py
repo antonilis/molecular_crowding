@@ -69,3 +69,19 @@ def crowders_properties():
     value['η_[dm3/g]'] = 0.004 * value['MW_[g/mol]'] ** 0.8 * 1e-1
     value['C*_[g/dm3]'] = 1 / value['η_[dm3/g]']
     return (value)
+
+
+# physical constants
+eps = 8.8541878188 * 10 ** (-12) * 81  # vacuum * water relative permittivity
+Na = 6.02214076 * 10 ** (23)  # avogadro number
+qe = 1.60217663 * 10 ** (-19)  # elementary charge of electrion in Culomb
+kb = 1.380649 * 10 ** (-23)  # boltzman constant
+R = 8.31446261815324  #
+
+# experimental data from our studies
+c0 = 35  # concentration of Na+ in mmol which is equal to mol/m^3
+zi = 13  # charge of the ssDNA 13bp
+a = 0.0754 / 0.1754 * 4 + 0.0246 / 0.1754  # the anions part of the ionic strength HPO42- and H2PO4-
+Km = 0.14  # complexation constant of the PEG - Na complexation
+Rg_ssDNA = 1.3  # radius of ssDNA, I have chosen this arbitraly
+T = 298.15  # temperature for the reaction
