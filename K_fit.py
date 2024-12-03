@@ -11,33 +11,24 @@ def calculate_average_RI_with_error_of_sample():
     df = pd.read_csv('source_data/RI_of_PEG_solutions.csv')
     names = ['EGly', 'PEG200', 'PEG400', 'PEG600', 'PEG1000', 'PEG1500', 'PEG3000', 'PEG6000', 'PEG12000', 'PEG20000',
              'PEG35000']
-    data = {}
-    # Process each name
+    data = {name: [] for name in names}  # Initialize a dictionary to store the data, where each key is a column name
+
     for name in names:
-        # Extract the RI columns for the current PEG
-        RI_columns = [f'{name}_RI_{i}' for i in range(1, 5)]  # f'{name}_RI_1' to f'{name}_RI_4'
+        for i in range(0, len(df[f'{name}_wt_%'])):
+            one_sample = df.loc[i, f'{name}_RI_1':f'{name}_RI_4']  # Ensure columns are consecutively ordered in DataFrame
+            average_RI_per_sample = np.average(one_sample)
+            std_RI_per_sample = np.std(one_sample)
+            data[name].append(f'{average_RI_per_sample:.5f}±{std_RI_per_sample:.5f}')
 
-        # Calculate average and standard deviation across columns
-        average_RI_per_sample = df[RI_columns].mean(axis=1).values
-        std_RI_per_sample = df[RI_columns].std(axis=1).values
-
-        # Combine average and standard deviation into a single formatted string (after computation)
-        data[name] = [f"{avg:.5f}±{std:.5f}" for avg, std in zip(average_RI_per_sample, std_RI_per_sample)]
-
-    # Create the result DataFrame
-    df_result = pd.DataFrame(data)
-
-    # Insert wt_% column at the beginning
-    df_result.insert(0, 'wt_%', df['PEG200_wt_%'].values)
+    df_result = pd.DataFrame(data)  # Convert the dictionary to a DataFrame
+    df_result.insert(0, 'wt_%', df['PEG200_wt_%'])  # inserting a column with wt%
     return df_result
-
 
 # Returns a dataframe with slopes for RI values of PEG solutions
 def calculate_RI_slope_with_error():
     # Collect results in a list
     results = []
-    names = ['EGly', 'PEG200', 'PEG400', 'PEG600', 'PEG1000', 'PEG1500', 'PEG3000', 'PEG6000', 'PEG12000', 'PEG20000',
-             'PEG35000']
+    names = ['EGly', 'PEG200', 'PEG400', 'PEG600', 'PEG1000', 'PEG1500', 'PEG3000', 'PEG6000', 'PEG12000', 'PEG20000', 'PEG35000']
     RI_avg_dataframe = calculate_average_RI_with_error_of_sample()
 
     # Convert columns to `ufloat`
@@ -65,7 +56,6 @@ def calculate_RI_slope_with_error():
     results_df.set_index('name', inplace=True)
     return results_df
 
-
 # extract name of crowder and its concentration based on the filename within a specific path
 def extract_name_and_value_from_a_file(file_path):
     base_name = os.path.splitext(file_path)[0]  # Remove the .csv extension
@@ -77,14 +67,44 @@ def extract_name_and_value_from_a_file(file_path):
         return name, value, base_name
     return None, None, None  # Return None for both if the filename doesn't match the expected format
 
+# returns all properties of crowders, such as MW, No of monomers, Rg, Rh, etc.
+def crowders_properties():
+    data = {
+        'MW_[g/mol]': [62.07, 200, 400, 600, 1000, 1500, 3000, 6000, 12000, 20000, 35000, 6000, 70000, 400000], # crowder molecular weight
+        'No_mono': [1, 4.131, 8.672, 13.212, 22.292, 33.643, 67.695, 135.800, 272.009, 453.620, 794.143, 37.005, 431.726, 1168.566], # no of crowder monomers
+        'd_coef': [0.00094, 0.0012, 0.0013, 0.00135, 0.0014, 0.00145, 0.0015, 0.00155, 0.0016, 0.00165, 0.0017, 0.0004, 0.00055, 0.00035]} # coefficient for density of crowder solutions ρ=ρ0+A⋅C, where C is crowder wt.% and ρ0 = 0.997 g/cm3
+    index = ["EGly", "PEG200", "PEG400", "PEG600", "PEG1000", "PEG1500", "PEG3000", "PEG6000", "PEG12000", "PEG20000", "PEG35000", "Dextran6000", "Dextran70000", "Ficoll400000"]
+    value = pd.DataFrame(data, index=index)
+    value['Rg_[nm]'] = 0.215 * value['MW_[g/mol]'] ** 0.583 / 10 # crowder radius of gyration
+    value['Rg_[nm]']['Dextran6000'] = 1.75
+    value['Rg_[nm]']['Dextran70000'] = 7.5
+    value['Rg_[nm]']['Ficoll400000'] = 12
+    value['Rg_err_[nm]'] = 0.215 * value['MW_[g/mol]'] ** 0.031 / 10 # crowder error for radius of gyration
+    value['Rg_err_[nm]']['Dextran6000'] = 0.25
+    value['Rg_err_[nm]']['Dextran70000'] = 0.5
+    value['Rg_err_[nm]']['Ficoll400000'] = 2
+    value['Rh_[nm]'] = 0.145 * value['MW_[g/mol]'] ** 0.571 / 10 # crowder hydrodynamic radius
+    value['Rh_[nm]']['Dextran6000'] = 1.15
+    value['Rh_[nm]']['Dextran70000'] = 5.25
+    value['Rh_[nm]']['Ficoll400000'] = 9
+    value['Rh_err_[nm]'] = 0.145 * value['MW_[g/mol]'] ** 0.009 / 10 # crowder error for hydrodynamic radius
+    value['Rh_err_[nm]']['Dextran6000'] = 0.15
+    value['Rh_err_[nm]']['Dextran70000'] = 0.75
+    value['Rh_err_[nm]']['Ficoll400000'] = 1
+    value['V_Rg_[nm3]'] = 4/3 * np.pi * value['Rg_[nm]'] ** 3 # volumes of crowder coils if they are a coil
+    value['V_Rg_err_[nm3]'] = 4 * np.pi * value['Rg_[nm]'] ** 2 * value['Rg_err_[nm]'] # error for volumes of crowder coils if they are a coil
+    return(value)
+
+
+
+print(crowders_properties())
 
 # equation to calculate κ of ion crowder interactions
-def equation_to_calculate_kappa(wt_percent, MW, no_monomers, Na_D, PEG_self_D, Na_0):
+def equation_to_calculate_κ(wt_percent, MW, solution_density,  no_monomers, Na_D, PEG_self_D, Na_0):
     mass = (wt_percent / 100) / (1 - (wt_percent / 100))
-    c_mono = (mass / MW) / ((mass + 1) / 1.1 * 0.001) * no_monomers
+    c_mono = (mass / MW) / ((mass + 1) / solution_density * 0.001) * no_monomers
     kappa = (Na_D - Na_0) / (PEG_self_D - Na_0) / c_mono
     return kappa.mean(), kappa.std()
-
 
 # calculates complexation constants of sodium ions by specific crowder per monomer
 def kappa_fitting():
@@ -112,9 +132,10 @@ def kappa_fitting():
     # Loop through crowders and their names
     for crowder, crowder_name in zip(crowders, crowders_names):
         # Calculate kappa and kappa error
-        kappa, kappa_err = equation_to_calculate_kappa(
+        kappa, kappa_err = equation_to_calculate_κ(
             crowder['wt_%'],
             value.loc[crowder_name]['MW_[g/mol]'],
+            0.997 +  value.loc[crowder_name]['d_coef'] * crowder['wt_%'], #density of specific crowder solution
             value.loc[crowder_name]['No_mono'],
             crowder['D_Na_[um2/s]'],
             crowder['D_crowder_[um2/s]'],
@@ -149,8 +170,7 @@ def K_DNA_DNA_fitting():
     for i in range(len(base_names)):
         df = pd.read_csv(f'source_data/DNA-DNA_countrate_vs_crowder_concentration/{base_names[i]}.csv')
         df_RI = calculate_RI_slope_with_error()
-        RI = values[i] * df_RI.at[names[i], 'slope'] + df_RI.at[
-            names[i], 'intercept']  # refractive index of specific solution
+        RI = values[i] * df_RI.at[names[i], 'slope'] + df_RI.at[names[i], 'intercept']  # refractive index of specific solution
         RI_water = 1.333
         z_correction = RI / RI_water
         C_Don = 1e-8 * ((100 - values[i]) / 100)  # nM correction for PEG concentration in solution
@@ -167,9 +187,9 @@ def K_DNA_DNA_fitting():
         # equation to calculate K of DNA-DNA interactions
         def K_fitting(x, K, D):
             return alfa * v0 * (
-                    D - (0.5 * (x / n + D + 1 / K - np.sqrt(((-x / n - D - 1 / K) ** 2) - 4 * x / n * D)))) * (
-                    1 + (gamma / alfa) * K * (
-                    x / n - (0.5 * (x / n + D + 1 / K - np.sqrt(((-x / n - D - 1 / K) ** 2) - 4 * x / n * D)))))
+                        D - (0.5 * (x / n + D + 1 / K - np.sqrt(((-x / n - D - 1 / K) ** 2) - 4 * x / n * D)))) * (
+                        1 + (gamma / alfa) * K * (
+                            x / n - (0.5 * (x / n + D + 1 / K - np.sqrt(((-x / n - D - 1 / K) ** 2) - 4 * x / n * D)))))
 
         # Fitting parameters
         funmodel = Model(K_fitting)
@@ -203,3 +223,15 @@ def K_DNA_DNA_fitting():
             K_results = pd.concat([K_results, pd.DataFrame([data_out])], ignore_index=True)
             K_results.to_csv('results/K_DNA-DNA_in_crowder_solutions.csv', index=False)  # Save to a CSV file
     return K_results
+
+
+x = crowders_properties()
+print(x)
+
+
+
+
+
+
+
+
