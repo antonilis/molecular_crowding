@@ -80,25 +80,39 @@ def extract_name_and_value_from_a_file(file_path):
 # returns all properties of crowders, such as MW, No of monomers, Rg, Rh, etc.
 def crowders_properties():
     data = {
-        'MW_[g/mol]': [62.07, 200, 400, 600, 1000, 1500, 3000, 6000, 12000, 20000, 35000],
-        'No_mono': [1, 4.131, 8.672, 13.212, 22.292, 33.643, 67.695, 135.800, 272.009, 453.620, 794.143],
-        'd_coef': [0.00094, 0.0012, 0.0013, 0.00135, 0.0014, 0.00145, 0.0015, 0.00155, 0.0016, 0.00165, 0.0017]} #ρ=ρ0+A⋅C, where C is PEG wt.% and ρ0 = 0.997 g/cm3
-    index = ["EGly", "PEG200", "PEG400", "PEG600", "PEG1000", "PEG1500", "PEG3000", "PEG6000", "PEG12000", "PEG20000", "PEG35000"]
+        'MW_[g/mol]': [62.07, 200, 400, 600, 1000, 1500, 3000, 6000, 12000, 20000, 35000, 6000, 70000, 400000], # crowder molecular weight
+        'No_mono': [1, 4.131, 8.672, 13.212, 22.292, 33.643, 67.695, 135.800, 272.009, 453.620, 794.143, 37.005, 431.726, 1168.566], # no of crowder monomers
+        'd_coef': [0.00094, 0.0012, 0.0013, 0.00135, 0.0014, 0.00145, 0.0015, 0.00155, 0.0016, 0.00165, 0.0017, 0.0004, 0.00055, 0.00035]} # coefficient for density of crowder solutions ρ=ρ0+A⋅C, where C is crowder wt.% and ρ0 = 0.997 g/cm3
+    index = ["EGly", "PEG200", "PEG400", "PEG600", "PEG1000", "PEG1500", "PEG3000", "PEG6000", "PEG12000", "PEG20000", "PEG35000", "Dextran6000", "Dextran70000", "Ficoll400000"]
     value = pd.DataFrame(data, index=index)
-    value['Rg_[nm]'] = 0.215 * value['MW_[g/mol]'] ** 0.583 / 10
-    value['Rg_err_[nm]'] = 0.215 * value['MW_[g/mol]'] ** 0.031 / 10
-    value['Rh_[nm]'] = 0.145 * value['MW_[g/mol]'] ** 0.571 / 10
-    value['Rh_err_[nm]'] = 0.145 * value['MW_[g/mol]'] ** 0.009 / 10
-    value['V_Rg_[nm]'] = 4/3 * np.pi * value['Rg_[nm]'] ** 3
-    value['V_Rg_err_[nm]'] = 4 * np.pi * value['Rg_[nm]'] ** 2 * value['Rg_err_[nm]']
-    value['η_[dm3/g]'] = 0.004 * value['MW_[g/mol]']**0.8 * 1e-1
-    value['C*_[g/dm3]'] = 1 / value['η_[dm3/g]']
-    return(value) #add
+    value['Rg_[nm]'] = 0.215 * value['MW_[g/mol]'] ** 0.583 / 10 # crowder radius of gyration
+    value['Rg_[nm]']['Dextran6000'] = 1.75
+    value['Rg_[nm]']['Dextran70000'] = 7.5
+    value['Rg_[nm]']['Ficoll400000'] = 12
+    value['Rg_err_[nm]'] = 0.215 * value['MW_[g/mol]'] ** 0.031 / 10 # crowder error for radius of gyration
+    value['Rg_err_[nm]']['Dextran6000'] = 0.25
+    value['Rg_err_[nm]']['Dextran70000'] = 0.5
+    value['Rg_err_[nm]']['Ficoll400000'] = 2
+    value['Rh_[nm]'] = 0.145 * value['MW_[g/mol]'] ** 0.571 / 10 # crowder hydrodynamic radius
+    value['Rh_[nm]']['Dextran6000'] = 1.15
+    value['Rh_[nm]']['Dextran70000'] = 5.25
+    value['Rh_[nm]']['Ficoll400000'] = 9
+    value['Rh_err_[nm]'] = 0.145 * value['MW_[g/mol]'] ** 0.009 / 10 # crowder error for hydrodynamic radius
+    value['Rh_err_[nm]']['Dextran6000'] = 0.15
+    value['Rh_err_[nm]']['Dextran70000'] = 0.75
+    value['Rh_err_[nm]']['Ficoll400000'] = 1
+    value['V_Rg_[nm3]'] = 4/3 * np.pi * value['Rg_[nm]'] ** 3 # volumes of crowder coils if they are a coil
+    value['V_Rg_err_[nm3]'] = 4 * np.pi * value['Rg_[nm]'] ** 2 * value['Rg_err_[nm]'] # error for volumes of crowder coils if they are a coil
+    return(value)
+
+
+
+print(crowders_properties())
 
 # equation to calculate κ of ion crowder interactions
-def equation_to_calculate_κ(wt_percent, MW, no_monomers, Na_D, PEG_self_D, Na_0):
+def equation_to_calculate_κ(wt_percent, MW, solution_density,  no_monomers, Na_D, PEG_self_D, Na_0):
     mass = (wt_percent / 100) / (1 - (wt_percent / 100))
-    c_mono = (mass / MW) / ((mass + 1) / 1.1 * 0.001) * no_monomers
+    c_mono = (mass / MW) / ((mass + 1) / solution_density * 0.001) * no_monomers
     kappa = (Na_D - Na_0) / (PEG_self_D - Na_0) / c_mono
     return kappa.mean(), kappa.std()
 
@@ -131,6 +145,7 @@ def kappa_fitting():
         kappa, kappa_err = equation_to_calculate_κ(
             crowder['wt_%'],
             value.loc[crowder_name]['MW_[g/mol]'],
+            0.997 +  value.loc[crowder_name]['d_coef'] * crowder['wt_%'], #density of specific crowder solution
             value.loc[crowder_name]['No_mono'],
             crowder['D_Na_[um2/s]'],
             crowder['D_crowder_[um2/s]'],
@@ -226,7 +241,7 @@ def K_DNA_DNA_fitting():
     return K_results
 
 
-x = crowders_properties()
+x = kappa_fitting()
 print(x)
 
 
