@@ -24,6 +24,7 @@ def calculate_average_RI_with_error_of_sample():
     df_result.insert(0, 'wt_%', df['PEG200_wt_%'])  # inserting a column with wt%
     return df_result
 
+
 # Returns a dataframe with slopes for RI values of PEG solutions
 def calculate_RI_slope_with_error():
     # Collect results in a list
@@ -56,6 +57,7 @@ def calculate_RI_slope_with_error():
     results_df.set_index('name', inplace=True)
     return results_df
 
+
 # extract name of crowder and its concentration based on the filename within a specific path
 def extract_name_and_value_from_a_file(file_path):
     base_name = os.path.splitext(file_path)[0]  # Remove the .csv extension
@@ -67,37 +69,6 @@ def extract_name_and_value_from_a_file(file_path):
         return name, value, base_name
     return None, None, None  # Return None for both if the filename doesn't match the expected format
 
-# returns all properties of crowders, such as MW, No of monomers, Rg, Rh, etc.
-def crowders_properties():
-    data = {
-        'MW_[g/mol]': [62.07, 200, 400, 600, 1000, 1500, 3000, 6000, 12000, 20000, 35000, 6000, 70000, 400000], # crowder molecular weight
-        'No_mono': [1, 4.131, 8.672, 13.212, 22.292, 33.643, 67.695, 135.800, 272.009, 453.620, 794.143, 37.005, 431.726, 1168.566], # no of crowder monomers
-        'd_coef': [0.00094, 0.0012, 0.0013, 0.00135, 0.0014, 0.00145, 0.0015, 0.00155, 0.0016, 0.00165, 0.0017, 0.0004, 0.00055, 0.00035]} # coefficient for density of crowder solutions ρ=ρ0+A⋅C, where C is crowder wt.% and ρ0 = 0.997 g/cm3
-    index = ["EGly", "PEG200", "PEG400", "PEG600", "PEG1000", "PEG1500", "PEG3000", "PEG6000", "PEG12000", "PEG20000", "PEG35000", "Dextran6000", "Dextran70000", "Ficoll400000"]
-    value = pd.DataFrame(data, index=index)
-    value['Rg_[nm]'] = 0.215 * value['MW_[g/mol]'] ** 0.583 / 10 # crowder radius of gyration
-    value['Rg_[nm]']['Dextran6000'] = 1.75
-    value['Rg_[nm]']['Dextran70000'] = 7.5
-    value['Rg_[nm]']['Ficoll400000'] = 12
-    value['Rg_err_[nm]'] = 0.215 * value['MW_[g/mol]'] ** 0.031 / 10 # crowder error for radius of gyration
-    value['Rg_err_[nm]']['Dextran6000'] = 0.25
-    value['Rg_err_[nm]']['Dextran70000'] = 0.5
-    value['Rg_err_[nm]']['Ficoll400000'] = 2
-    value['Rh_[nm]'] = 0.145 * value['MW_[g/mol]'] ** 0.571 / 10 # crowder hydrodynamic radius
-    value['Rh_[nm]']['Dextran6000'] = 1.15
-    value['Rh_[nm]']['Dextran70000'] = 5.25
-    value['Rh_[nm]']['Ficoll400000'] = 9
-    value['Rh_err_[nm]'] = 0.145 * value['MW_[g/mol]'] ** 0.009 / 10 # crowder error for hydrodynamic radius
-    value['Rh_err_[nm]']['Dextran6000'] = 0.15
-    value['Rh_err_[nm]']['Dextran70000'] = 0.75
-    value['Rh_err_[nm]']['Ficoll400000'] = 1
-    value['V_Rg_[nm3]'] = 4/3 * np.pi * value['Rg_[nm]'] ** 3 # volumes of crowder coils if they are a coil
-    value['V_Rg_err_[nm3]'] = 4 * np.pi * value['Rg_[nm]'] ** 2 * value['Rg_err_[nm]'] # error for volumes of crowder coils if they are a coil
-    return(value)
-
-
-
-print(crowders_properties())
 
 # equation to calculate κ of ion crowder interactions
 def equation_to_calculate_κ(wt_percent, MW, solution_density,  no_monomers, Na_D, PEG_self_D, Na_0):
@@ -105,6 +76,7 @@ def equation_to_calculate_κ(wt_percent, MW, solution_density,  no_monomers, Na_
     c_mono = (mass / MW) / ((mass + 1) / solution_density * 0.001) * no_monomers
     kappa = (Na_D - Na_0) / (PEG_self_D - Na_0) / c_mono
     return kappa.mean(), kappa.std()
+
 
 # calculates complexation constants of sodium ions by specific crowder per monomer
 def kappa_fitting():
@@ -143,6 +115,10 @@ def kappa_fitting():
         )
         if crowder_name == 'EGly':  # divided by 2 because EGly has two 'monomers'
             kappa_results[crowder_name] = f'{kappa / 2}±{kappa_err / 2}'
+        elif crowder_name == 'Dextran6000' or crowder_name == 'Dextran70000':  # divided by 5 because we assumed one Na+ per one oxygen atom'
+            kappa_results[crowder_name] = f'{kappa / 5}±{kappa_err / 5}'
+        elif crowder_name == 'Ficoll400000':  # divided by 5 because we assumed one Na+ per one oxygen atom'
+            kappa_results[crowder_name] = f'{kappa / 11}±{kappa_err / 11}' # divided by 11 because we assumed one Na+ per one oxygen atom'
         else:
             kappa_results[crowder_name] = f'{kappa}±{kappa_err}'
 
@@ -224,9 +200,8 @@ def K_DNA_DNA_fitting():
             K_results.to_csv('results/K_DNA-DNA_in_crowder_solutions.csv', index=False)  # Save to a CSV file
     return K_results
 
+print(kappa_fitting())
 
-x = crowders_properties()
-print(x)
 
 
 
