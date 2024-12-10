@@ -35,7 +35,6 @@ def calculate_RI_slope_with_error():
     # Convert columns to `ufloat`
     for col in RI_avg_dataframe.columns:
         RI_avg_dataframe[col] = RI_avg_dataframe[col].map(uts.convert_to_ufloat)
-
     # Loop through each name and calculate slope, intercept, and r_squared
     for name in names:
         if str(RI_avg_dataframe[name].iloc[-1]) == 'nan+/-nan':  # Checks if last cell in column is nan+/-nan
@@ -200,7 +199,10 @@ def K_DNA_DNA_fitting():
             K_results.to_csv('results/K_DNA-DNA_in_crowder_solutions.csv', index=False)  # Save to a CSV file
     return K_results
 
-print(kappa_fitting())
+
+
+
+# print(kappa_fitting())
 
 
 

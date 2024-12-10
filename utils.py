@@ -6,6 +6,22 @@ import pandas as pd
 from scipy.optimize import curve_fit
 
 
+# physical constants
+eps = 8.8541878188 * 10 ** (-12) * 81  # vacuum * water relative permittivity
+Na = 6.02214076 * 10 ** (23)  # avogadro number
+qe = 1.60217663 * 10 ** (-19)  # elementary charge of electrion in Culomb
+kb = 1.380649 * 10 ** (-23)  # boltzman constant
+R = 8.31446261815324  #
+
+# experimental data from our studies
+c0 = 35  # concentration of Na+ in mmol which is equal to mol/m^3
+zi = 13  # charge of the ssDNA 13bp
+a = 0.0754 / 0.1754 * 4 + 0.0246 / 0.1754  # the anions part of the ionic strength HPO42- and H2PO4-
+Km = 0.14  # complexation constant of the PEG - Na complexation
+Rg_ssDNA = 1.3  # radius of ssDNA, I have chosen this arbitraly
+T = 298.15  # temperature for the reaction
+
+
 # Function to convert strings with uncertainties to ufloat
 def convert_to_ufloat(value):
     if isinstance(value, str):  # Check if the value is a string
@@ -31,8 +47,14 @@ def convert_to_ufloat(value):
 def get_float_uncertainty(column):
     values = np.array([x.nominal_value for x in column], dtype=np.float64)
     uncertainty = np.array([x.std_dev for x in column], dtype=np.float64)
-
     return values, uncertainty
+
+
+def weighted_average_with_error(data, errors):
+    weights = 1 / errors ** 2
+    weighted_avg = np.sum(data * weights) / np.sum(weights)
+    weighted_avg_error = np.sqrt(1 / np.sum(weights))
+    return weighted_avg, weighted_avg_error
 
 
 # standard linear fit
@@ -69,6 +91,21 @@ def exponential_fit_with_r_squared(x, y):
     return a, b, c, r_squared
 
 
+def power_model(x, a, b):
+    return a * x**b
+
+
+def power_fit_with_r_squared(x, y):
+    popt, pcov = curve_fit(power_model, x, y, p0=(1, 1), maxfev=10000)
+    a, b = popt
+    y_fit = power_model(x, a, b)
+    residuals = y - y_fit
+    ss_res = np.sum(residuals**2)
+    ss_tot = np.sum((y - np.mean(y))**2)
+    r_squared = 1 - (ss_res / ss_tot)
+    return a, b, r_squared
+
+
 # log function for K fitting
 def logdef(x):
     b = math.floor(math.log10(abs(x)))
@@ -103,20 +140,12 @@ def crowders_properties():
     value.loc['Ficoll400000', 'Rh_err_[nm]'] = 1
     value['V_Rg_[nm3]'] = 4/3 * np.pi * value['Rg_[nm]'] ** 3 # volumes of crowder coils if they are a coil
     value['V_Rg_err_[nm3]'] = 4 * np.pi * value['Rg_[nm]'] ** 2 * value['Rg_err_[nm]'] # error for volumes of crowder coils if they are a coil
+    value['c*_[g/cm3]'] = value['MW_[g/mol]'] / (Na * value['V_Rg_[nm3]']) * 1e21 # concentration at which polymer starts to overlap calculated using scaling theories for polymer solutions from de Gennes, P. G. "Scaling Concepts in Polymer Physics." Cornell University Press, 1979.
     return(value)
 
 
-# physical constants
-eps = 8.8541878188 * 10 ** (-12) * 81  # vacuum * water relative permittivity
-Na = 6.02214076 * 10 ** (23)  # avogadro number
-qe = 1.60217663 * 10 ** (-19)  # elementary charge of electrion in Culomb
-kb = 1.380649 * 10 ** (-23)  # boltzman constant
-R = 8.31446261815324  #
 
-# experimental data from our studies
-c0 = 35  # concentration of Na+ in mmol which is equal to mol/m^3
-zi = 13  # charge of the ssDNA 13bp
-a = 0.0754 / 0.1754 * 4 + 0.0246 / 0.1754  # the anions part of the ionic strength HPO42- and H2PO4-
-Km = 0.14  # complexation constant of the PEG - Na complexation
-Rg_ssDNA = 1.3  # radius of ssDNA, I have chosen this arbitraly
-T = 298.15  # temperature for the reaction
+
+
+
+
