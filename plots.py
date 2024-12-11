@@ -287,13 +287,68 @@ def PEG_coil_to_mesh_transition():
     plt.savefig('Plots/PEG_coil_to_mesh_transition.png', bbox_inches='tight', transparent=True, dpi=300)
     return plt.show()
 
-PEG_coil_to_mesh_transition()
+
+def refractive_index_of_crowder_solutions():
+    df = K_fit.calculate_average_RI_with_error_of_sample()
+
+    # Adjust the plotting styles
+    styles = {
+        'EGly': {'color': '#2d642a', 'marker': '.', 'ms': 12, 'mec': '#000000', 'label': 'EGly'},
+        'PEG200': {'color': '#b3daff', 'marker': 'd', 'ms': 7, 'mec': '#000000', 'label': 'PEG 200'},
+        'PEG400': {'color': '#640024', 'marker': '^', 'ms': 7, 'mec': '#000000', 'label': 'PEG 400'},
+        'PEG600': {'color': '#ff730f', 'marker': 'h', 'ms': 7, 'mec': '#000000', 'label': 'PEG 600'},
+        'PEG1000': {'color': '#fed85d', 'marker': 'P', 'ms': 6.5, 'mec': '#000000', 'label': 'PEG 1k'},
+        'PEG1500': {'color': '#142cd7', 'marker': 'p', 'ms': 7, 'mec': '#000000', 'label': 'PEG 1.5k'},
+        'PEG3000': {'color': '#ac1416', 'marker': 's', 'ms': 6, 'mec': '#000000', 'label': 'PEG 3k'},
+        'PEG6000': {'color': '#674ea7', 'marker': 'D', 'ms': 5.5, 'mec': '#000000', 'label': 'PEG 6k'},
+        'PEG12000': {'color': '#709d74', 'marker': 'v', 'ms': 7, 'mec': '#000000', 'label': 'PEG 12k'},
+        'PEG20000': {'color': '#00cccc', 'marker': 'X', 'ms': 7, 'mec': '#000000', 'label': 'PEG 20k'},
+        'PEG35000': {'color': '#b28092', 'marker': 'h', 'ms': 7, 'mec': '#000000', 'label': 'PEG 35k'}}
+
+    # plotting
+    plt.figure(figsize=(7, 5))
+    for crowder, style in styles.items():
+        values = df[crowder].str.split('±').str[0].astype(float)  # Extract values before ±
+        errors = df[crowder].str.split('±').str[1].astype(float)  # Extract errors after ±
+
+        x_0 = [0, 1.337]
+        slope, b_x, b_y, r_squared = uts.linear_fit_with_fixed_point(df['wt_%'], values, x_0)
+        x_range = np.linspace(0, 42, 100)
+        regression_line = slope * (x_range - b_x) + b_y
+        plt.plot(x_range, regression_line, color=style['color'], linestyle='--', lw=1.5)
+
+        plt.errorbar(df['wt_%'], values, yerr=errors, color=style['color'], marker=style['marker'],
+                     mec=style['mec'], linestyle='none', lw=1, ms=style['ms'], elinewidth=1, capsize=3,
+                     capthick=1, label=f'{style['label']}, R²={r_squared:.3f}')
+
+    plt.title('$RI$ of crowder solutions', fontsize=18)
+    plt.xlabel('crowder wt.%', fontsize=16)
+    plt.ylabel('$RI$', fontsize=16)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.xlim(-2, 42)
+    plt.legend(frameon=True, loc='upper left', fontsize=8)
+    plt.savefig('plots/refractive_index_of_crowder_solutions.png', bbox_inches='tight', transparent=True, dpi=300)
+    return plt.show()
 
 
-# pd.set_option('display.max_rows', None)  # Show all rows
-# pd.set_option('display.max_columns', None)  # Show all columns
-# pd.set_option('display.width', None)  # Ensure the table fits the screen width
-# print (uts.crowders_properties())
+pd.set_option('display.max_rows', None)  # Show all rows
+pd.set_option('display.max_columns', None)  # Show all columns
+pd.set_option('display.width', None)  # Ensure the table fits the screen width
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
