@@ -36,6 +36,7 @@ def fit_polynomial_to_K(data):
 
     return coeffs_df
 
+
 def fit_coefficients_of_quadratic_fit():
     data = pd.read_csv('./results/K_DNA-DNA_in_crowder_solutions.csv')
 
@@ -74,5 +75,24 @@ def calculate_a1_a2_theoretical_values(c0=uts.c0, zi=uts.zi, a=uts.a, Km=uts.Km,
     theory_a1 = 2 * (5 * a + 3) * lambd / (uts.R * Temperature) * Km
 
     return theory_a1, theory_a2
+
+pd.set_option('display.max_rows', None)  # Show all rows
+pd.set_option('display.max_columns', None)  # Show all columns
+pd.set_option('display.width', None)  # Ensure the table fits the screen width
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

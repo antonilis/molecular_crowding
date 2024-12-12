@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from scipy.ndimage import rotate
 import os
 import matplotlib.pyplot as plt
 import utils as uts
@@ -335,7 +334,7 @@ def refractive_index_of_crowder_solutions():
 pd.set_option('display.max_rows', None)  # Show all rows
 pd.set_option('display.max_columns', None)  # Show all columns
 pd.set_option('display.width', None)  # Ensure the table fits the screen width
-
+# print(uts.crowders_properties())
 
 
 

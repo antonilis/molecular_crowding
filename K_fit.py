@@ -202,8 +202,6 @@ def K_DNA_DNA_fitting():
 
 
 
-# print(kappa_fitting())
-
 
 
 
