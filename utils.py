@@ -143,6 +143,54 @@ def crowders_properties():
     value['c*_[g/cm3]'] = value['MW_[g/mol]'] / (Na * value['V_Rg_[nm3]']) * 1e21 # concentration at which polymer starts to overlap calculated using scaling theories for polymer solutions from de Gennes, P. G. "Scaling Concepts in Polymer Physics." Cornell University Press, 1979.
     return(value)
 
+# mesh sizes for PEGs if mesh
+def mesh_sizes():
+    properties = crowders_properties().loc['EGly':'PEG35000', ]
+
+    # crowders
+    crowders = [
+        "EGly", "PEG200", "PEG400", "PEG600", "PEG1000", "PEG1500",
+        "PEG3000", "PEG6000", "PEG12000", "PEG20000", "PEG35000"]
+
+    # weight percents of crowders
+    wt_percents = [2.5, 5 , 7.5, 10, 12.5, 15, 20, 25, 30, 40]
+
+    row_names = [
+        "2.5_wt%", "5_wt%", "7.5_wt%", "10_wt%", "12.5_wt%",
+        "15_wt%", "20_wt%", "25_wt%", "30_wt%", "40_wt%"]
+
+    # mesh sizes [nm] calculated from equation ξ = Rg * (c/c*)**-β where β is 0.75 from Ulrich R.D. (1978) P. J. Flory. In: Ulrich R.D. (eds) Macromolecular Science. Contemporary Topics in Polymer Science, vol 1. Springer, Boston, MA. https://doi.org/10.1007/978-1-4684-2853-7_5
+    data = [[properties.loc[crowder, 'Rg_[nm]'] * ((wt_percent / (100 / (0.997 + wt_percent * properties.loc[crowder, 'd_coef']))) / properties.loc[crowder, 'c*_[g/cm3]']) ** -0.75 for crowder in crowders] for wt_percent in wt_percents]
+    df = pd.DataFrame(data, index=row_names, columns=crowders)
+
+    # assigns 'Rg' to points where polymers are still coils (in this regime polymer is described by radius of gyration)
+    df = df.astype(object)
+    df.loc[:,'EGly'] = 'Rg'
+    df.loc[:,'PEG200'] = 'Rg'
+    df.loc[:,'PEG400'] = 'Rg'
+    df.loc[:'30_wt%','PEG600'] = 'Rg'
+    df.loc[:'20_wt%','PEG1000'] = 'Rg'
+    df.loc[:'15_wt%','PEG1500'] = 'Rg'
+    df.loc[:'7.5_wt%','PEG3000'] = 'Rg'
+    df.loc[:'5_wt%','PEG6000'] = 'Rg'
+    df.loc[:'2.5_wt%','PEG12000'] = 'Rg'
+    df.loc[:'2.5_wt%','PEG20000'] = 'Rg'
+    return df
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
