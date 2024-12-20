@@ -4,6 +4,7 @@ import math
 from scipy.stats import linregress
 import pandas as pd
 from scipy.optimize import curve_fit
+from scipy import odr
 
 
 # physical constants
@@ -65,6 +66,48 @@ def linear_fit_normal(x, y):
     return slope, intercept, r_squared
 
 
+def linear_fit_with_x_y_errors(x, y):
+    """
+    Fit a linear model to data with errors in both x and y using orthogonal distance regression (ODR).
+
+    Parameters:
+    - x (array-like): Independent variable data.
+    - y (array-like): Dependent variable data.
+    - x_errors (array-like): Uncertainties in the x values.
+    - y_errors (array-like): Uncertainties in the y values.
+
+    Returns:
+    - slope (float): Fitted slope of the line.
+    - intercept (float): Fitted intercept of the line.
+    - slope_err (float): Standard deviation of the fitted slope.
+    - intercept_err (float): Standard deviation of the fitted intercept.
+    """
+
+    # Define the linear model function
+    def linear_model(B, x):
+        return B[0] * x + B[1]
+
+    y_value, y_error = get_float_uncertainty(y)
+    x_value, x_error = get_float_uncertainty(x)
+    # Prepare data for ODR
+    data = odr.Data(x=x_value, y=y_value, wd=x_error ** -2, we=y_error ** -2)
+
+    # Create a model object
+    model = odr.Model(linear_model)
+
+    # Create an ODR object with initial parameter guesses
+    odr_fit = odr.ODR(data, model, beta0=[1., 1.])
+
+    # Run the fit
+    output = odr_fit.run()
+
+    # Extract fitted parameters and their uncertainties
+    slope, intercept = output.beta
+    slope_err, intercept_err = output.sd_beta
+
+    return slope, intercept, slope_err, intercept_err
+
+
 def linear_fit_with_fixed_point(x, y, fixed_point):
     b_x, b_y = fixed_point
     a = np.sum((x - b_x) * (y - b_y)) / np.sum((x - b_x) ** 2)
@@ -74,6 +117,33 @@ def linear_fit_with_fixed_point(x, y, fixed_point):
     ssr = np.sum((y - y_pred) ** 2)
     r_squared = 1 - (ssr / sst)
     return a, b_x, b_y, r_squared
+
+
+def combine_value_and_error(df, value_col, error_col):
+    """
+    Combine two columns (value and error) into one column with ufloat objects,
+    and remove the original value and error columns.
+
+    Parameters:
+    - df: DataFrame containing the value and error columns.
+    - value_col: Name of the column with values.
+    - error_col: Name of the column with errors.
+    - new_col_name: Name of the new column to store the ufloat values.
+
+    Returns:
+    - The DataFrame with the combined ufloat column and original value/error columns removed.
+    """
+
+    df[value_col] = pd.to_numeric(df[value_col], errors='coerce')
+    df[error_col] = pd.to_numeric(df[error_col], errors='coerce')
+
+    # Create the new column with ufloat objects
+    df[value_col] = df.apply(lambda row: unc.ufloat(row[value_col], row[error_col]), axis=1)
+
+    # Drop the original value and error columns
+    df.drop(columns=[error_col], inplace=True)
+
+    return df
 
 
 def exponential_model(x, a, b, c):
@@ -141,7 +211,7 @@ def crowders_properties():
     value['V_Rg_[nm3]'] = 4/3 * np.pi * value['Rg_[nm]'] ** 3 # volumes of crowder coils if they are a coil
     value['V_Rg_err_[nm3]'] = 4 * np.pi * value['Rg_[nm]'] ** 2 * value['Rg_err_[nm]'] # error for volumes of crowder coils if they are a coil
     value['c*_[g/cm3]'] = value['MW_[g/mol]'] / (Na * value['V_Rg_[nm3]']) * 1e21 # concentration at which polymer starts to overlap calculated using scaling theories for polymer solutions from de Gennes, P. G. "Scaling Concepts in Polymer Physics." Cornell University Press, 1979.
-    return(value)
+    return (value)
 
 # mesh sizes for PEGs if mesh
 def mesh_sizes():
@@ -179,7 +249,7 @@ def mesh_sizes():
 
 
 
-
+df = mesh_sizes()
 
 
 

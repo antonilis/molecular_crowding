@@ -106,7 +106,7 @@ def kappa_fitting():
         kappa, kappa_err = equation_to_calculate_κ(
             crowder['wt_%'],
             value.loc[crowder_name]['MW_[g/mol]'],
-            0.997 +  value.loc[crowder_name]['d_coef'] * crowder['wt_%'], #density of specific crowder solution
+            0.997 + value.loc[crowder_name]['d_coef'] * crowder['wt_%'], #density of specific crowder solution
             value.loc[crowder_name]['No_mono'],
             crowder['D_Na_[um2/s]'],
             crowder['D_crowder_[um2/s]'],
@@ -201,8 +201,7 @@ def K_DNA_DNA_fitting():
 
 
 
-
-
+kappa_fitting()
 
 
 

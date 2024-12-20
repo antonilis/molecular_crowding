@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import utils as uts
-import K_fit
+import ssDNA_hybdrization_equillibrium_constant
 
 
 def adjust_dataframe():
@@ -219,7 +219,7 @@ def crowder_self_diffusion_coefficients_in_their_mass_functions():
 
 def kappa_results_for_PEG():
     # transforming data
-    kappa_fitting_output = K_fit.kappa_fitting()
+    kappa_fitting_output = ssDNA_hybdrization_equillibrium_constant.kappa_fitting()
     df_kappa = pd.DataFrame([{
         "crowder": k,
         "kappa": float(v.split('±')[0]),
@@ -288,7 +288,7 @@ def PEG_coil_to_mesh_transition():
 
 
 def refractive_index_of_crowder_solutions():
-    df = K_fit.calculate_average_RI_with_error_of_sample()
+    df = ssDNA_hybdrization_equillibrium_constant.calculate_average_RI_with_error_of_sample()
 
     # Adjust the plotting styles
     styles = {
@@ -318,7 +318,8 @@ def refractive_index_of_crowder_solutions():
 
         plt.errorbar(df['wt_%'], values, yerr=errors, color=style['color'], marker=style['marker'],
                      mec=style['mec'], linestyle='none', lw=1, ms=style['ms'], elinewidth=1, capsize=3,
-                     capthick=1, label=f'{style['label']}, R²={r_squared:.3f}')
+                     capthick=1, label=f''
+                                       f"{style['label']}, R²={r_squared:.3f}")
 
     plt.title('$RI$ of crowder solutions', fontsize=18)
     plt.xlabel('crowder wt.%', fontsize=16)
@@ -330,11 +331,21 @@ def refractive_index_of_crowder_solutions():
     plt.savefig('plots/refractive_index_of_crowder_solutions.png', bbox_inches='tight', transparent=True, dpi=300)
     return plt.show()
 
+def main():
+    K_DNA_vs_crowder_weight_percent()
+    D_DNA_vs_crowder_weight_percent()
+    D_Na_vs_crowder_weight_percent()
+    crowder_self_diffusion_coefficients_in_their_mass_functions()
+    kappa_results_for_PEG()
+    PEG_coil_to_mesh_transition()
+    refractive_index_of_crowder_solutions()
 
-pd.set_option('display.max_rows', None)  # Show all rows
-pd.set_option('display.max_columns', None)  # Show all columns
-pd.set_option('display.width', None)  # Ensure the table fits the screen width
-# print(uts.crowders_properties())
+
+
+
+if __name__ == "__main__":
+    main()
+
 
 
 
