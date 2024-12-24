@@ -1,10 +1,11 @@
 import os
 import pandas as pd
-import uncertainties
+import uncertainties as unc
 
 import utils as uts
 import numpy as np
 from uncertainties import umath
+import matplotlib.pyplot as plt
 
 
 def load_and_combine_csv_files(path):
@@ -32,31 +33,68 @@ def merge_with_crowder_properties(data, properties_func):
 def calculate_density_and_concentration(df):
     """Calculate density and concentration for the merged DataFrame."""
     df['density'] = 0.997 + df['d_coef'] * df['wt_%']
-    df['concentration [M]'] = df['wt_%'] * df['density'] / df['MW_[g/mol]'] * 10
+    df['monomers concentration [M]'] = df['wt_%'] * df['density'] / df['MW_[g/mol]'] * 10 * df['No_mono']
     return df
 
 
 def calculate_columns_for_fit(df, D0):
-    df['x axis'] = df['concentration [M]'].apply(lambda x: umath.log(x))
+    df['x axis'] = np.log(df['monomers concentration [M]'])
 
-    df['y axis'] = (df['D_Na_[um2/s]'] - D0) / (df['D_crowder_[um2/s]'] - D0)
+
+    B = df['D_crowder_[um2/s]']
+
+    df['y axis'] = (df['D_Na_[um2/s]'] - D0) / (B - D0)   # around 0
+
+    #df['y axis'] = 9/4 * (df['D_Na_[um2/s]'] - (2/3) * (D0 + B/2)) / (B - D0) + 1/2    # around 1/2
+
+    #df['y axis'] = 4 * (df['D_Na_[um2/s]'] - 1/2 * (D0 + B)) / (B - D0) + 1     # around 1
 
     # Remove rows where column '' is negative
-    df_filtered = df[df['y axis'] >= 0]
+    df = df[df['y axis'] >= 0]
 
-    df_filtered.loc[:, 'y axis'] = df_filtered['y axis'].apply(lambda x: umath.log(x))
+    df.loc[:, 'y axis'] = df['y axis'].apply(lambda x: umath.log(x))
 
-    return df_filtered
+    return df
 
 
-# def equillibrium_constant_fit(df):
-#     crowders = df['crowders'].unique()
-#
-#     for crowder in crowders:
-#         slope, intercept, slope_err, intercept_err = uts.linear_fit_with_x_y_errors(crowder['x axis'],
-#                                                                                     crowder['y axis'])
-#         slope = unc.ufloat(slope, slope_err)
-#         intercept = unc.
+def equillibrium_constant_fit(df):
+    # Create lists to store the new columns' data
+    slopes = []
+    intercepts = []
+
+    crowders = df['crowder'].unique()
+
+    for crowder in crowders:
+        crowder_data = df[df['crowder'] == crowder]  # Filter data for this specific crowder
+        slope, intercept = uts.linear_fit_with_y_err(crowder_data['x axis'],
+                                                          crowder_data['y axis'])
+
+        # Append values to the lists, repeated for all rows of this crowder
+        slopes.extend([slope] * len(crowder_data))
+        intercepts.extend([intercept] * len(crowder_data))
+
+    # Add new columns to the DataFrame
+    df['slope'] = slopes
+    df['intercept'] = intercepts
+
+    return df
+
+def plot_fits(df):
+    crowders = df['crowder'].unique()
+    for crowder in crowders:
+        crowder_data = df[df['crowder'] == crowder]  # Filter data for this specific crowder
+
+        x = crowder_data['x axis']
+        y, y_err = uts.get_float_uncertainty(crowder_data['y axis'])
+        slope = uts.get_float_uncertainty(crowder_data['slope'])[0]
+        intercept = uts.get_float_uncertainty(crowder_data['intercept'])[0]
+
+        plt.errorbar(x, y, yerr=y_err, fmt='o', label='Experimental point', capsize=3)
+        plt.plot(x, slope * x + intercept, label='fit')
+        plt.title(crowder)
+        plt.legend()
+        plt.savefig(os.path.join('./plots', f"{crowder}.png"))
+        plt.close()
 
 
 def calc_sodium_crowder_eq_constant():
@@ -83,6 +121,13 @@ def calc_sodium_crowder_eq_constant():
 
     # get x and y axis for fit
     data = calculate_columns_for_fit(data, Na0)
+
+    # # perform linear fit for each crowder
+    data = equillibrium_constant_fit(data)
+    data['K complex'] = data['intercept'].apply(lambda x: umath.exp(x))
+    data['real x'] = (data['K complex'] * data['monomers concentration [M]'])**(data['slope'])
+
+    plot_fits(data)
 
     return data
 

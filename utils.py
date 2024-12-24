@@ -65,47 +65,20 @@ def linear_fit_normal(x, y):
     r_squared = r_value ** 2
     return slope, intercept, r_squared
 
+def linear_fit_with_y_err(x, y):
 
-def linear_fit_with_x_y_errors(x, y):
-    """
-    Fit a linear model to data with errors in both x and y using orthogonal distance regression (ODR).
-
-    Parameters:
-    - x (array-like): Independent variable data.
-    - y (array-like): Dependent variable data.
-    - x_errors (array-like): Uncertainties in the x values.
-    - y_errors (array-like): Uncertainties in the y values.
-
-    Returns:
-    - slope (float): Fitted slope of the line.
-    - intercept (float): Fitted intercept of the line.
-    - slope_err (float): Standard deviation of the fitted slope.
-    - intercept_err (float): Standard deviation of the fitted intercept.
-    """
-
-    # Define the linear model function
-    def linear_model(B, x):
-        return B[0] * x + B[1]
 
     y_value, y_error = get_float_uncertainty(y)
-    x_value, x_error = get_float_uncertainty(x)
-    # Prepare data for ODR
-    data = odr.Data(x=x_value, y=y_value, wd=x_error ** -2, we=y_error ** -2)
+    coeff, cov_matrix = np.polyfit(x, y_value , 1, w=1 / y_error, cov=True)
 
-    # Create a model object
-    model = odr.Model(linear_model)
+    errors = np.sqrt(np.diag(cov_matrix))
 
-    # Create an ODR object with initial parameter guesses
-    odr_fit = odr.ODR(data, model, beta0=[1., 1.])
+    ufloat_coefficients = [unc.ufloat(coeff[i], errors[i]) for i in range(len(coeff))]
 
-    # Run the fit
-    output = odr_fit.run()
+    slope, intercept = ufloat_coefficients[0], ufloat_coefficients[1]
 
-    # Extract fitted parameters and their uncertainties
-    slope, intercept = output.beta
-    slope_err, intercept_err = output.sd_beta
+    return slope, intercept
 
-    return slope, intercept, slope_err, intercept_err
 
 
 def linear_fit_with_fixed_point(x, y, fixed_point):
@@ -249,7 +222,7 @@ def mesh_sizes():
 
 
 
-df = mesh_sizes()
+df = crowders_properties()
 
 
 
