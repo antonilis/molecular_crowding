@@ -119,6 +119,10 @@ def combine_value_and_error(df, value_col, error_col):
     return df
 
 
+def gibbs_free_energy_from_K(K_0, K):
+    return -R * T * np.log(K / K_0)
+
+
 def exponential_model(x, a, b, c):
     return a * np.exp(b * x) + c
 

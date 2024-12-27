@@ -6,8 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5a564cf1-d128-45c1-8bc8-0b71da0e63b5" name="Changes" comment="mesh_sizes added to utils">
       <change afterPath="$PROJECT_DIR$/source_data/kinetics_DNA_DNA_in_EGly_40%wt.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plots.py" beforeDir="false" afterPath="$PROJECT_DIR$/plots.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ssDNA_hybdrization_equillibrium_constant.py" beforeDir="false" afterPath="$PROJECT_DIR$/ssDNA_hybdrization_equillibrium_constant.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -54,21 +54,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.K_dependency.executor": "Run",
-    "Python.K_fit.executor": "Run",
-    "Python.depletion_analysis.executor": "Run",
-    "Python.plots.executor": "Run",
-    "Python.ssDNA_hybdrization_equillibrium_constant.executor": "Run",
-    "Python.utils.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/adam9/PycharmProjects/molecular_crowding/source_data",
-    "settings.editor.selected.configurable": "preferences.editor"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Python.K_dependency.executor&quot;: &quot;Run&quot;,
+    &quot;Python.K_fit.executor&quot;: &quot;Run&quot;,
+    &quot;Python.depletion_analysis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.plots.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ssDNA_hybdrization_equillibrium_constant.executor&quot;: &quot;Run&quot;,
+    &quot;Python.utils.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/adam9/PycharmProjects/molecular_crowding/source_data&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\adam9\PycharmProjects\molecular_crowding\source_data" />
@@ -76,8 +76,8 @@
       <recent name="C:\Users\adam9\PycharmProjects\molecular_crowding" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\adam9\PycharmProjects\molecular_crowding" />
       <recent name="C:\Users\adam9\PycharmProjects\molecular_crowding\source_data" />
+      <recent name="C:\Users\adam9\PycharmProjects\molecular_crowding" />
     </key>
   </component>
   <component name="RunManager" selected="Python.plots">
@@ -138,7 +138,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plots.py" />
       <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
@@ -150,6 +150,9 @@
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -189,10 +192,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.plots" />
+        <item itemvalue="Python.utils" />
         <item itemvalue="Python.ssDNA_hybdrization_equillibrium_constant" />
         <item itemvalue="Python.K_dependency" />
         <item itemvalue="Python.K_fit" />
-        <item itemvalue="Python.utils" />
       </list>
     </recent_temporary>
   </component>
@@ -308,7 +311,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734366750361</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="mesh_sizes added to utils">
+      <option name="closed" value="true" />
+      <created>1735295575743</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1735295575743</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

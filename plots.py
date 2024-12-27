@@ -2,8 +2,10 @@ import numpy as np
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
+from scipy.signal import savgol_filter
 import utils as uts
 import ssDNA_hybdrization_equillibrium_constant
+
 
 
 def adjust_dataframe():
@@ -331,26 +333,113 @@ def refractive_index_of_crowder_solutions():
     plt.savefig('plots/refractive_index_of_crowder_solutions.png', bbox_inches='tight', transparent=True, dpi=300)
     return plt.show()
 
-def main():
-    K_DNA_vs_crowder_weight_percent()
-    D_DNA_vs_crowder_weight_percent()
-    D_Na_vs_crowder_weight_percent()
-    crowder_self_diffusion_coefficients_in_their_mass_functions()
-    kappa_results_for_PEG()
-    PEG_coil_to_mesh_transition()
-    refractive_index_of_crowder_solutions()
+
+def gibbs_free_energy_of_DNA_DNA_reaction_vs_crowder_weight_percent():
+    # Load and process data
+    df = pd.read_csv('results/K_DNA-DNA_in_crowder_solutions.csv')
+    K_0 = unc.ufloat(1760000000, 311872000)  # Reference K
+    df["K"] = df["K"].apply(uts.convert_to_ufloat)
+    df["D"] = df["D"].apply(uts.convert_to_ufloat)
+    df["G"] = df["K"].apply(lambda K: -uts.R * uts.T * umath.log(K / K_0) / 1000)  # ΔG in kJ/mol
+    df = df[df["G"].apply(lambda g: not unp.isnan(g))]  # Filter NaN G values
+
+    # Define styles for plotting
+    styles = {
+        'buffer': {'x': [0], 'y': [0], 'yerr': [0], 'color': '#868788', 'marker': '*', 'ms': 9.5, 'mec': '#000000', 'label': 'buffer'},
+        'EGly': {'color': '#2d642a', 'marker': '.', 'ms': 12, 'mec': '#000000', 'label': 'EGly'},
+        'PEG200': {'color': '#b3daff', 'marker': 'd', 'ms': 7, 'mec': '#000000', 'label': 'PEG 200'},
+        'PEG400': {'color': '#640024', 'marker': '^', 'ms': 7, 'mec': '#000000', 'label': 'PEG 400'},
+        'PEG600': {'color': '#ff730f', 'marker': 'h', 'ms': 7, 'mec': '#000000', 'label': 'PEG 600'},
+        'PEG1000': {'color': '#fed85d', 'marker': 'P', 'ms': 6.5, 'mec': '#000000', 'label': 'PEG 1k'},
+        'PEG1500': {'color': '#142cd7', 'marker': 'p', 'ms': 7, 'mec': '#000000', 'label': 'PEG 1.5k'},
+        'PEG3000': {'color': '#ac1416', 'marker': 's', 'ms': 6, 'mec': '#000000', 'label': 'PEG 3k'},
+        'PEG6000': {'color': '#674ea7', 'marker': 'D', 'ms': 5.5, 'mec': '#000000', 'label': 'PEG 6k'},
+        'PEG12000': {'color': '#709d74', 'marker': 'v', 'ms': 7, 'mec': '#000000', 'label': 'PEG 12k'},
+        'PEG20000': {'color': '#00cccc', 'marker': 'X', 'ms': 7, 'mec': '#000000', 'label': 'PEG 20k'},
+        'PEG35000': {'color': '#b28092', 'marker': 'h', 'ms': 7, 'mec': '#000000', 'label': 'PEG 35k'},
+    }
+
+    plt.figure(figsize=(7, 5))
+
+    for crowder, style in styles.items():
+        if crowder == 'buffer':
+            plt.errorbar(style['x'], style['y'], yerr=style['yerr'], color=style['color'], marker=style['marker'],
+                         mec=style['mec'], linestyle='none', lw=1, ms=style['ms'], elinewidth=1, capsize=3, capthick=1, label=style['label'])
+        else:
+            subset = df[df['crowder'] == crowder]
+            wt_percent = subset['wt_%'].values
+            G_nominal = unp.nominal_values(subset['G'])
+            G_error = unp.std_devs(subset['G'])
+            plt.errorbar(wt_percent, G_nominal, yerr=G_error, color=style['color'], marker=style['marker'],
+                         mec=style['mec'], linestyle='none', lw=1, ms=style['ms'], elinewidth=1, capsize=3, capthick=1, label=style['label'])
+
+    # Formatting to match the original
+    plt.title('$ΔG_{DNA-DNA}$ vs crowder wt.% change', fontsize=18)
+    plt.xlabel('Crowder wt.%', fontsize=16)
+    plt.ylabel('$ΔG_{DNA-DNA}$ [kJ/mol]', fontsize=16)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.xlim(-2, 52)
+    plt.legend(frameon=True, loc='upper left', fontsize=8)
+    plt.savefig('plots/gibbs_free_energy_vs_crowder_weight_percent.png', bbox_inches='tight', transparent=True, dpi=300)
+    plt.show()
 
 
+def kinetics_DNA_DNA_in_EGly_40wt():
+    df = pd.read_csv('source_data/kinetics_DNA_DNA_in_EGly_40%wt.csv', sep=',', names=['t', 'It'], header=0)
+    # apply Savitzky-Golay filter for denoising
+    df['It_denoised'] = savgol_filter(df['It'], window_length=37, polyorder=2)
+
+    # calculating k and error
+    If = 1 # final fluorescence intensity [a.u.]
+    a = 50 # Acc/Don ratio
+    df['k'] = df['It_denoised'] / (If * (If - df['It_denoised']) * df['t'] * a)  # k with a factor
+    df['ΔIt'] = (1 / (df['t'] * (If - df['It_denoised'])**2 * a)) * 0.1 * df['It_denoised']
+    df['ΔIf'] = (df['It_denoised'] * (df['It_denoised'] - 2 * If)) / (If**2 * df['t'] * (If - df['It_denoised'])**2 * a) * 0.1 * If
+    df['Δk'] = np.sqrt(df['ΔIt']**2 + df['ΔIf']**2)  # k error
+    df['k/Δk^2'] = df['k'] / df['Δk']**2  # Calculation for weighted mean
+    df['1/Δk^2'] = 1 / df['Δk']**2  # Calculation for weighted mean
+    k_avg_no_multiply = (df["k/Δk^2"].sum() / df["1/Δk^2"].sum())  # Weighted mean k
+    k_avg = k_avg_no_multiply * 10**8  # Weighted mean k
+    k_error = (1 / df['1/Δk^2'].sum())**0.5 * 10**8  # Weighted mean error k
+
+    # plot
+    plt.figure(figsize=(7, 5))
+
+    plt.errorbar(df['t']/60, df['It_denoised'], color='#142cd7', marker='.', linestyle='none', ms=6, zorder=1)
+    fit = (k_avg_no_multiply * (If**2) * df['t'] * a) / (1 + k_avg_no_multiply * If * df['t'] * a)
+    plt.plot(df['t']/60, fit, color='#dfb37f', linewidth=2.5, zorder=2)
+
+    legend_label = ('$k_{a} = $' + f'{k_avg:.2e} M$^{{-1}}$s$^{{-1}}$\nerror = {k_error/k_avg*100:.2f}%')
+    plt.legend(frameon=True, loc='lower right', fontsize=12, labels=[legend_label, 'data'])
+    plt.title('DNA-DNA association rate in 40 wt.% EGly', fontsize=18)
+    plt.xticks(size=12)
+    plt.yticks(size=12)
+    plt.xlabel('time [min]', fontsize=16)
+    plt.ylabel('fluorescence [a.u.]', fontsize=16)
+    plt.savefig('plots/kinetics_DNA_DNA_in_EGly_40wt.png', bbox_inches='tight', transparent=True, dpi=300)
+    return plt.show()
 
 
-if __name__ == "__main__":
-    main()
+def denoising_kinetics_DNA_DNA_in_EGly_40wt():
+    df = pd.read_csv('source_data/kinetics_DNA_DNA_in_EGly_40%wt.csv', sep=',', names=['t', 'It'], header=0)
+    # apply Savitzky-Golay filter for denoising
+    df['It_denoised'] = savgol_filter(df['It'], window_length=37, polyorder=2)
 
+    # plot
+    plt.figure(figsize=(7, 5))
 
+    plt.errorbar(df['t'] / 60, df['It'], color='#dfb37f', marker='.', linestyle='none', ms=6, zorder=1, label = 'source data')
+    plt.errorbar(df['t']/60, df['It_denoised'], color='#142cd7', marker='.', linestyle='none', ms=6, zorder=1, label = 'denoised data')
 
-
-
-
+    plt.legend(frameon=True, loc='lower right', fontsize=12)
+    plt.title('denoised vs source data of\nDNA-DNA association in 40 wt.% EGly', fontsize=18)
+    plt.xticks(size=12)
+    plt.yticks(size=12)
+    plt.xlabel('time [min]', fontsize=16)
+    plt.ylabel('fluorescence [a.u.]', fontsize=16)
+    plt.savefig('plots/denoising_kinetics_DNA_DNA_in_EGly_40wt.png', bbox_inches='tight', transparent=True, dpi=300)
+    return plt.show()
 
 
 
