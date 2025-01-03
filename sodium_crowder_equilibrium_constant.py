@@ -34,22 +34,52 @@ def calculate_density_and_concentration(df):
     """Calculate density and concentration for the merged DataFrame."""
     df['density'] = 0.997 + df['d_coef'] * df['wt_%']
     df['monomers concentration [M]'] = df['wt_%'] * df['density'] / df['MW_[g/mol]'] * 10 * df['No_mono']
+    df['mass concentration [g/cm3]'] = df['wt_%'] * df['density'] / 100
+
     return df
 
 
-def calculate_columns_for_fit(df, D0):
+def calculate_viscosity_correction(df):
+    # average diffusion coefficient of the peg
+    D_Na0 = df[df['wt_%'] == 0]['D_Na_[um2/s]'].mean()
+
+    rh = uts.calculate_hydrodynamic_radius(D_Na0)
+    # correctioin taken from paper: https://doi.org/10.1039/B908386C
+    a, b = 0.7, 1.45
+    ksi = df['Rg_[nm]'] * (df['mass concentration [g/cm3]'] / df['c*_[g/cm3]']) ** (-0.75)
+
+    def calculate_corrected_diffusion(row):
+        if row['Rg_[nm]'] < 0.5:
+            # Apply macroviscosity formula
+            macro_viscosity = np.exp(b * (row['Rg_[nm]'] / ksi[row.name]) ** a)
+            return D_Na0 / macro_viscosity
+        else:
+            # Apply nanoviscosity correction
+            nano_viscosity = np.exp(b * (rh / ksi[row.name]) ** a)
+            return D_Na0 / nano_viscosity
+
+    # Compute corrected diffusion coefficient for each row
+    df['D_Na_[um2/s] corr'] = df.apply(calculate_corrected_diffusion, axis=1)
+    print(rh)
+    return df
+
+
+def calculate_columns_for_fit(df):
     df['x axis'] = np.log(df['monomers concentration [M]'])
 
+    df['x axis'] = df['monomers concentration [M]']
 
     B = df['D_crowder_[um2/s]']
 
-    df['y axis'] = (df['D_Na_[um2/s]'] - D0) / (B - D0)   # around 0
+    D0 = df['D_Na_[um2/s] corr']
 
-    #df['y axis'] = 9/4 * (df['D_Na_[um2/s]'] - (2/3) * (D0 + B/2)) / (B - D0) + 1/2    # around 1/2
+    df['y axis'] = (df['D_Na_[um2/s]'] - D0) / (B - D0)  # around 0
 
-    #df['y axis'] = 4 * (df['D_Na_[um2/s]'] - 1/2 * (D0 + B)) / (B - D0) + 1     # around 1
+    # df['y axis'] = 9/4 * (df['D_Na_[um2/s]'] - (2/3) * (D0 + B/2)) / (B - D0) + 1/2    # around 1/2
 
-    # Remove rows where column '' is negative
+    # df['y axis'] = 4 * (df['D_Na_[um2/s]'] - 1/2 * (D0 + B)) / (B - D0) + 1     # around 1
+
+    # Remove rows where column 'y axis' is negative
     df = df[df['y axis'] >= 0]
 
     df.loc[:, 'y axis'] = df['y axis'].apply(lambda x: umath.log(x))
@@ -67,17 +97,22 @@ def equillibrium_constant_fit(df):
     for crowder in crowders:
         crowder_data = df[df['crowder'] == crowder]  # Filter data for this specific crowder
         slope, intercept = uts.linear_fit_with_y_err(crowder_data['x axis'],
-                                                          crowder_data['y axis'])
+                                                     crowder_data['y axis'])
 
         # Append values to the lists, repeated for all rows of this crowder
         slopes.extend([slope] * len(crowder_data))
         intercepts.extend([intercept] * len(crowder_data))
 
+        print(crowder)
+
     # Add new columns to the DataFrame
     df['slope'] = slopes
     df['intercept'] = intercepts
+    df['K complex'] = df['intercept'].apply(lambda x: umath.exp(x))
+    df['real x'] = (df['K complex'] * df['monomers concentration [M]']) ** (df['slope'])
 
     return df
+
 
 def plot_fits(df):
     crowders = df['crowder'].unique()
@@ -106,26 +141,25 @@ def calc_sodium_crowder_eq_constant():
     # Merge with crowder properties
     data = merge_with_crowder_properties(data, uts.crowders_properties)
 
+    # Calculate density and concentration
+    data = calculate_density_and_concentration(data)
+
     # Calculate Na0 (mean D_Na at wt_% == 0)
-    Na0 = data[data['wt_%'] == 0]['D_Na_[um2/s]'].mean()
+    data = calculate_viscosity_correction(data)
 
     # Clean data from NaN values
     data.dropna(inplace=True)
 
-    # Calculate density and concentration
-    data = calculate_density_and_concentration(data)
 
     # Combine errors and values as one unc.float()
     data = uts.combine_value_and_error(data, 'D_Na_[um2/s]', 'D_Na_err_[um2/s]')
     data = uts.combine_value_and_error(data, 'D_crowder_[um2/s]', 'D_crowder_err_[um2/s]')
 
-    # get x and y axis for fit
-    data = calculate_columns_for_fit(data, Na0)
+    # # get x and y axis for fit
+    data = calculate_columns_for_fit(data)
 
-    # # perform linear fit for each crowder
+    # perform linear fit for each crowder
     data = equillibrium_constant_fit(data)
-    data['K complex'] = data['intercept'].apply(lambda x: umath.exp(x))
-    data['real x'] = (data['K complex'] * data['monomers concentration [M]'])**(data['slope'])
 
     plot_fits(data)
 
@@ -134,3 +168,5 @@ def calc_sodium_crowder_eq_constant():
 
 if __name__ == "__main__":
     final_df = calc_sodium_crowder_eq_constant()
+
+
