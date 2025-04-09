@@ -18,8 +18,8 @@ R = 8.31446261815324  #
 c0 = 35  # concentration of Na+ in mmol which is equal to mol/m^3
 zi = 13  # charge of the ssDNA 13bp
 a = 0.0754 / 0.1754 * 4 + 0.0246 / 0.1754  # the anions part of the ionic strength HPO42- and H2PO4-
-Km = 0.14  # complexation constant of the PEG - Na complexation
-Rg_ssDNA = 1.3  # radius of ssDNA, I have chosen this arbitraly
+Beta_m = unc.ufloat(0.02154, 0.00339)  # complexation constant of the PEG - Na complexation
+Rg_ssDNA = 1.3  # gyration radius of ssDNA, I have chosen this arbitraly
 T = 298.15  # temperature for the reaction and all the experimets
 
 
@@ -238,7 +238,7 @@ def mesh_sizes():
 df = crowders_properties()
 
 
-
+dat = mesh_sizes()
 
 
 

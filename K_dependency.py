@@ -10,7 +10,7 @@ def choose_peg(data, peg):
     return df
 
 
-def fit_polynomial_to_K(data):
+def fit_quadratic_to_experimental_K(data):
     names = data['crowder'].unique()
 
     coeffs_dict = {}
@@ -37,7 +37,7 @@ def fit_polynomial_to_K(data):
     return coeffs_df
 
 
-def fit_coefficients_of_quadratic_fit():
+def prepare_and_fit_experimental_data():
     data = pd.read_csv('./results/K_DNA-DNA_in_crowder_solutions.csv')
 
     data.dropna(inplace=True)
@@ -48,19 +48,19 @@ def fit_coefficients_of_quadratic_fit():
 
     data = pd.merge(data, pd.DataFrame(uts.crowders_properties()), left_on='crowder', right_index=True)
 
-    density = 1
+    data['density'] = 0.997 + data['d_coef'] * data['wt_%']
 
-    data['concentration [M]'] = data['wt_%'] * density / data['MW_[g/mol]'] * 10 #possibly we will modify here the density
+    data['concentration [M]'] = data['wt_%'] * data['density'] / data['MW_[g/mol]'] * 10
 
-    coefficients = fit_polynomial_to_K(data)
+    coefficients = fit_quadratic_to_experimental_K(data)
     coefficients = pd.merge(coefficients, pd.DataFrame(uts.crowders_properties()), left_on='crowder', right_index=True)
 
     return coefficients
 
 
 ###########  theretical calculations ##########################
-def calculate_a1_a2_theoretical_values(c0=uts.c0, zi=uts.zi, a=uts.a, Km=uts.Km, reagent_Rg=uts.Rg_ssDNA,
-                                       Temperature=uts.T):
+def calculate_a1mon_a2mon_theoretical_values(c0=uts.c0, zi=uts.zi, a=uts.a, Beta_m=uts.Beta_m, reagent_Rg=uts.Rg_ssDNA,
+                                             Temperature=uts.T):
     alpha = np.sqrt((uts.eps * uts.kb * Temperature) / (2 * uts.Na * uts.qe ** 2))
 
     Zi = zi * uts.qe / (4 * np.pi * uts.eps)
@@ -70,29 +70,23 @@ def calculate_a1_a2_theoretical_values(c0=uts.c0, zi=uts.zi, a=uts.a, Km=uts.Km,
 
     lambd = numerator / denominator
 
-    theory_a2 = -(4 * a + 2) * lambd / (uts.R * Temperature) * Km ** 2
+    theory_a2 = -(4 * a + 2) * lambd / (uts.R * Temperature) * Beta_m ** 2
 
-    theory_a1 = 2 * (5 * a + 3) * lambd / (uts.R * Temperature) * Km
+    theory_a1_monomer = 2 * (5 * a + 3) * lambd / (uts.R * Temperature) * Beta_m
 
-    return theory_a1, theory_a2
+    theory_a1_Rg = 4 * np.pi * uts.Rg_ssDNA ** 2 * uts.Na
 
-pd.set_option('display.max_rows', None)  # Show all rows
-pd.set_option('display.max_columns', None)  # Show all columns
-pd.set_option('display.width', None)  # Ensure the table fits the screen width
+    result_df = pd.DataFrame(
+        {'theory a1 monomer': [theory_a1_monomer], 'theory a1 Rg': theory_a1_Rg, 'theory a2m': [theory_a2]})
 
-
-
+    return result_df
 
 
+if __name__ == '__main__':
+    dat = prepare_and_fit_experimental_data()
 
+    theory = calculate_a1mon_a2mon_theoretical_values()
 
-
-
-
-
-
-
-
-
-
-
+# pd.set_option('display.max_rows', None)  # Show all rows
+# pd.set_option('display.max_columns', None)  # Show all columns
+# pd.set_option('display.width', None)  # Ensure the table fits the screen width
