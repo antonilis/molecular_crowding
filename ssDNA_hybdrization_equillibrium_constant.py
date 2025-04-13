@@ -201,8 +201,7 @@ def K_DNA_DNA_fitting():
 
 
 
-kappa_fitting()
-
+restulst = K_DNA_DNA_fitting()
 
 
 

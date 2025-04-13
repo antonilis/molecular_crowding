@@ -55,7 +55,7 @@ def prepare_and_fit_experimental_data():
     coefficients = fit_quadratic_to_experimental_K(data)
     coefficients = pd.merge(coefficients, pd.DataFrame(uts.crowders_properties()), left_on='crowder', right_index=True)
 
-    return coefficients
+    return (data, coefficients)
 
 
 ###########  theretical calculations ##########################
@@ -83,7 +83,7 @@ def calculate_a1mon_a2mon_theoretical_values(c0=uts.c0, zi=uts.zi, a=uts.a, Beta
 
 
 if __name__ == '__main__':
-    dat = prepare_and_fit_experimental_data()
+    dat, fit = prepare_and_fit_experimental_data()
 
     theory = calculate_a1mon_a2mon_theoretical_values()
 
