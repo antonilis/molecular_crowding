@@ -1,7 +1,8 @@
 import os
 import pandas as pd
 import uncertainties as unc
-
+from scipy.optimize import least_squares
+from scipy.optimize import curve_fit
 import utils as uts
 import numpy as np
 from uncertainties import umath
@@ -34,6 +35,7 @@ def calculate_density_and_concentration(df):
     """Calculate density and concentration for the merged DataFrame."""
     df['density'] = 0.997 + df['d_coef'] * df['wt_%']
     df['monomers concentration [M]'] = df['wt_%'] * df['density'] / df['MW_[g/mol]'] * 10 * df['No_mono']
+    df['concentration [M]'] = df['wt_%'] * df['density'] / df['MW_[g/mol]'] * 10
     df['mass concentration [g/cm3]'] = df['wt_%'] * df['density'] / 100
 
     return df
@@ -66,61 +68,43 @@ def calculate_viscosity_correction(df):
 
     return df, D_Na0
 
+def model_for_fit(x,A, B, alpha):
 
-def calculate_columns_for_fit(df):
-    df['x axis'] = np.log(df['monomers concentration [M]'])
+    return (A + B * alpha * x) / (1 + alpha * x)
 
-    def columns_calculation(row):
+def residual(alpha, x, y, A, B):
 
-        B = row['D_crowder_[um2/s]']
-        D0 = row['D_Na_[um2/s] corr']
 
-        if row['monomers concentration [M]'] < 2:
-
-            return (row['D_Na_[um2/s]'] - D0) / (B - D0)
-
-        else:
-
-            return 9 / 4 * (row['D_Na_[um2/s]'] - (2 / 3) * (D0 + B / 2)) / (B - D0) + 1 / 2
-
-    df['y axis'] = df.apply(columns_calculation, axis=1)
-
-    # Remove rows where column 'y axis' is negative
-    df = df[df['y axis'] >= 0]
-
-    df.loc[:, 'y axis'] = df['y axis'].apply(lambda x: umath.log(x))
-
-    return df
-
+    return model_for_fit(x, A,  B, alpha[0]) - y
 
 def equillibrium_constant_fit(df):
     # Create lists to store the new columns' data
-    slopes = []
-    intercepts = []
 
-    # Filter out crowders with less than 2 data points
-    valid_crowders = df.groupby('crowder').filter(lambda x: len(x) >= 2)
+    nBeta = []
 
-    crowders = valid_crowders['crowder'].unique()
+    crowders = df['crowder'].unique()
 
     for crowder in crowders:
-        crowder_data = valid_crowders[valid_crowders['crowder'] == crowder]  # Filter data for this specific crowder
 
-        slope, intercept = uts.linear_fit_with_y_err(crowder_data['x axis'],
-                                                     crowder_data['y axis'])
+        data = df[df['crowder'] == crowder]
 
-        # Append values to the lists, repeated for all rows of this crowder
-        slopes.extend([slope] * len(crowder_data))
-        intercepts.extend([intercept] * len(crowder_data))
+        x_data = data['concentration [M]']
 
-    # Add new columns to the DataFrame
-    valid_crowders['slope'] = slopes
-    valid_crowders['intercept'] = intercepts
-    valid_crowders['Beta complex'] = valid_crowders['intercept'].apply(lambda x: umath.exp(x))
-    valid_crowders['real x'] = (valid_crowders['Beta complex'] * valid_crowders['monomers concentration [M]']) ** (
-        valid_crowders['slope'])
+        y_data, y_err = uts.get_float_uncertainty(data['D_Na_[um2/s]'])
 
-    return valid_crowders
+        D_Na = data['D_Na_[um2/s] corr']
+
+        D_crowder, err = uts.get_float_uncertainty(data['D_crowder_[um2/s]'])
+
+        res = least_squares(residual, x0=[0.1], args=(x_data, y_data, D_Na, D_crowder))
+        nBeta_fit = res.x[0]
+
+        nBeta.extend([nBeta_fit] * len(data))
+
+
+    df['n Beta [1/M]'] = nBeta
+
+    return df
 
 
 def plot_fits(df):
@@ -128,13 +112,27 @@ def plot_fits(df):
     for crowder in crowders:
         crowder_data = df[df['crowder'] == crowder]  # Filter data for this specific crowder
 
-        x = crowder_data['x axis']
-        y, y_err = uts.get_float_uncertainty(crowder_data['y axis'])
-        slope = uts.get_float_uncertainty(crowder_data['slope'])[0]
-        intercept = uts.get_float_uncertainty(crowder_data['intercept'])[0]
+        x = crowder_data['concentration [M]']
+        y, y_err = uts.get_float_uncertainty(crowder_data['D_Na_[um2/s]'])
 
-        plt.errorbar(x, y, yerr=y_err, fmt='o', label='Experimental point', capsize=3)
-        plt.plot(x, slope * x + intercept, label='fit')
+
+        D_Na = crowder_data['D_Na_[um2/s] corr']
+
+        D_crowder, err = uts.get_float_uncertainty(crowder_data['D_crowder_[um2/s]'])
+
+        alpha = crowder_data['n Beta [1/M]'].iloc[0]
+
+        # Interpolation grid for smooth plotting
+        x_fit = np.linspace(min(x), max(x), 200)
+        D_crowder_fit = np.interp(x_fit, x, D_crowder)  # interpolate B to match x_fit
+
+        D_Na_fit = np.interp(x_fit, x, D_Na)
+
+        y_fit = model_for_fit(x_fit, D_Na_fit, D_crowder_fit, alpha)
+
+        plt.plot(x, y, 'v', label='Experimental point')
+
+        plt.plot(x_fit, y_fit, label='fit')
         plt.title(crowder)
         plt.legend()
         plt.savefig(os.path.join('./plots', f"{crowder}.png"))
@@ -177,10 +175,7 @@ def calc_sodium_crowder_eq_constant():
     # Calculate density and concentration
     data = calculate_density_and_concentration(data)
 
-    # Calculate Na0 (mean D_Na at wt_% == 0)
-    # D_Na0 = 1425
     data, D_Na0 = calculate_viscosity_correction(data)
-    # data['D_Na_[um2/s] corr'] = [D_Na0] * data.shape[0]
 
     # Clean data from NaN values
     data.dropna(inplace=True)
@@ -189,19 +184,21 @@ def calc_sodium_crowder_eq_constant():
     data = uts.combine_value_and_error(data, 'D_Na_[um2/s]', 'D_Na_err_[um2/s]')
     data = uts.combine_value_and_error(data, 'D_crowder_[um2/s]', 'D_crowder_err_[um2/s]')
 
-    # # get x and y axis for fit
-    data = calculate_columns_for_fit(data)
 
     # perform linear fit for each crowder
     data = equillibrium_constant_fit(data)
 
     data.sort_values(by=['MW_[g/mol]', 'monomers concentration [M]'], inplace=True)
 
-    # plot_fits(data)
+    data['n Beta C_peg'] = data['n Beta [1/M]'] * data['concentration [M]']
 
-    final_complexation_slope_values = final_values_of_beta_n(data)
 
-    return (data, raw_data, D_Na0, final_complexation_slope_values)
+    plot_fits(data)
+
+
+    #final_complexation_slope_values = final_values_of_beta_n(data)
+
+    return (data, raw_data, D_Na0)
 
 
 if __name__ == "__main__":

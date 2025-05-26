@@ -3,6 +3,7 @@ import uncertainties as unc
 from uncertainties import unumpy as unp
 import numpy as np
 import utils as uts
+import matplotlib.pyplot as plt
 
 
 def get_molar_mass(probe):
@@ -108,6 +109,14 @@ class PNAS_data:
             y, y_error = uts.get_float_uncertainty(unp.log(self.get_probe(name)['K [M]']))
             coeff = np.polyfit(x, y, 2, w=1 / y_error)
             coeff_dict[name] = coeff
+
+            # plt.plot(x, y, '.', label='exp data')
+            # plt.plot(x, coeff[0] * x ** 2 + coeff[1] * x + coeff[2], label='fit')
+            # plt.title(f'{name}')
+            # plt.legend()
+            # plt.show()
+            # plt.savefig(f'./plots/peg_{name}.png', dpi=600)
+            # plt.close()
 
         # Convert the dictionary to a DataFrame
         coeffs_df = pd.DataFrame.from_dict(coeff_dict, orient='index',

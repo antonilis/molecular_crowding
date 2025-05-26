@@ -19,18 +19,15 @@ c0 = 35  # concentration of Na+ in mmol which is equal to mol/m^3
 zi = 13  # charge of the ssDNA 13bp
 a = 0.0754 / 0.1754 * 4 + 0.0246 / 0.1754  # the anions part of the ionic strength HPO42- and H2PO4-
 Beta_m = unc.ufloat(0.02154, 0.00339)  # complexation constant of the PEG - Na complexation
-Rg_ssDNA = 1.3  # gyration radius of ssDNA, I have chosen this arbitraly
+Rg_ssDNA = (13 * 0.6)/np.sqrt(12)  # gyration radius of ssDNA taken from this paper: doi:10.1039/C3BM60181A.
+
 T = 298.15  # temperature for the reaction and all the experimets
 
-
-# calculatinh radius of the sodium cation
-
+# calculating the radius of the sodium cation
 def calculate_hydrodynamic_radius(D):
     viscosity = 0.0008900 # of water in 25 degrees
     rh = (kb * T) / (6 * np.pi * viscosity * D * 10**(-12)) * 10**9
     return rh
-
-
 
 # Function to convert strings with uncertainties to ufloat
 def convert_to_ufloat(value):
