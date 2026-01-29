@@ -49,6 +49,22 @@ def convert_to_ufloat(value):
                 return value  # Return original value if conversion fails
     return value  # Return as is if it's already a number
 
+def combine_to_ufloat(df, value_col, error_col, out_col=None, drop=False):
+
+    if out_col is None:
+        out_col = value_col
+
+    df[out_col] = [
+        unc.ufloat(v, e) if pd.notna(v) and pd.notna(e) else np.nan
+        for v, e in zip(df[value_col], df[error_col])
+    ]
+
+    if drop:
+        df.drop(columns=[value_col, error_col], inplace=True)
+
+    return df
+
+
 
 # from unc.float extracts value and error
 def get_float_uncertainty(column):
@@ -170,11 +186,11 @@ def logdef(x):
 # returns all properties of crowders, such as MW, No of monomers, Rg, Rh, etc.
 def crowders_properties():
     data = {
-        'MW_[g/mol]': [62.07, 200, 400, 600, 1000, 1500, 3000, 6000, 12000, 20000, 35000, 6000, 70000, 400000], # crowder molecular weight
-        'No_mono': [1, 4.131, 8.672, 13.212, 22.292, 33.643, 67.695, 135.800, 272.009, 453.620, 794.143, 37.005, 431.726, 1168.566], # no of crowder monomers
-        'd_coef': [0.00094, 0.0012, 0.0013, 0.00135, 0.0014, 0.00145, 0.0015, 0.00155, 0.0016, 0.00165, 0.0017, 0.0004, 0.00055, 0.00035]} # coefficient for density of crowder solutions ρ=ρ0+A⋅C, where C is crowder wt.% and ρ0 = 0.997 g/cm3
-    index = ["EGly", "PEG200", "PEG400", "PEG600", "PEG1000", "PEG1500", "PEG3000", "PEG6000", "PEG12000", "PEG20000", "PEG35000", "Dextran6000", "Dextran70000", "Ficoll400000"]
+        'MW_[g/mol]': [62.07, 106.12, 150.174, 200, 400, 600, 1000, 1500, 2000, 2050, 3000, 4600, 6000, 8000, 12000, 20000, 35000, 6000, 70000, 400000], # crowder molecular weight
+        'No_mono': [1, 2, 3, 4.131, 8.672, 13.212, 22.292, 33.643, 44.994, 67.695, 104.018, 135.800, 181.203, 272.009, 272.009, 453.620, 794.143, 37.005, 431.726, 1168.566]}
+    index = ["EGly", "diEGly", "triEGly", "PEG200", "PEG400", "PEG600", "PEG1000", "PEG1500", "PEG2000", "PEG2050", "PEG3000", "PEG4600", "PEG6000", "PEG8000","PEG12000", "PEG20000", "PEG35000", "Dextran6000", "Dextran70000", "Ficoll400000"]
     value = pd.DataFrame(data, index=index)
+
     value['Rg_[nm]'] = 0.215 * value['MW_[g/mol]'] ** 0.583 / 10 # crowder radius of gyration
     value.loc['Dextran6000', 'Rg_[nm]'] = 1.75
     value.loc['Dextran70000', 'Rg_[nm]'] = 7.5
@@ -196,46 +212,12 @@ def crowders_properties():
     value['c*_[g/cm3]'] = value['MW_[g/mol]'] / (Na * value['V_Rg_[nm3]']) * 1e21 # concentration at which polymer starts to overlap calculated using scaling theories for polymer solutions from de Gennes, P. G. "Scaling Concepts in Polymer Physics." Cornell University Press, 1979.
     return (value)
 
-# mesh sizes for PEGs if mesh
-def mesh_sizes():
-    properties = crowders_properties().loc['EGly':'PEG35000', ]
-
-    # crowders
-    crowders = [
-        "EGly", "PEG200", "PEG400", "PEG600", "PEG1000", "PEG1500",
-        "PEG3000", "PEG6000", "PEG12000", "PEG20000", "PEG35000"]
-
-    # weight percents of crowders
-    wt_percents = [2.5, 5 , 7.5, 10, 12.5, 15, 20, 25, 30, 40]
-
-    row_names = [
-        "2.5_wt%", "5_wt%", "7.5_wt%", "10_wt%", "12.5_wt%",
-        "15_wt%", "20_wt%", "25_wt%", "30_wt%", "40_wt%"]
-
-    # mesh sizes [nm] calculated from equation ξ = Rg * (c/c*)**-β where β is 0.75 from Ulrich R.D. (1978) P. J. Flory. In: Ulrich R.D. (eds) Macromolecular Science. Contemporary Topics in Polymer Science, vol 1. Springer, Boston, MA. https://doi.org/10.1007/978-1-4684-2853-7_5
-    data = [[properties.loc[crowder, 'Rg_[nm]'] * ((wt_percent / (100 / (0.997 + wt_percent * properties.loc[crowder, 'd_coef']))) / properties.loc[crowder, 'c*_[g/cm3]']) ** -0.75 for crowder in crowders] for wt_percent in wt_percents]
-    df = pd.DataFrame(data, index=row_names, columns=crowders)
-
-    # assigns 'Rg' to points where polymers are still coils (in this regime polymer is described by radius of gyration)
-    df = df.astype(object)
-    df.loc[:,'EGly'] = 'Rg'
-    df.loc[:,'PEG200'] = 'Rg'
-    df.loc[:,'PEG400'] = 'Rg'
-    df.loc[:'30_wt%','PEG600'] = 'Rg'
-    df.loc[:'20_wt%','PEG1000'] = 'Rg'
-    df.loc[:'15_wt%','PEG1500'] = 'Rg'
-    df.loc[:'7.5_wt%','PEG3000'] = 'Rg'
-    df.loc[:'5_wt%','PEG6000'] = 'Rg'
-    df.loc[:'2.5_wt%','PEG12000'] = 'Rg'
-    df.loc[:'2.5_wt%','PEG20000'] = 'Rg'
-    return df
 
 
 
 df = crowders_properties()
 
 
-dat = mesh_sizes()
 
 
 

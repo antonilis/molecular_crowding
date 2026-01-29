@@ -4,12 +4,11 @@ import os
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 import utils as uts
-import ssDNA_hybdrization_equillibrium_constant
-
+from source_data.MacromoleculeEquilibria_Crowding.our_raw_results import ssDNA_hybdrization_equillibrium_constant
 
 
 def adjust_dataframe():
-    df = pd.read_csv('results/K_DNA-DNA_in_crowder_solutions.csv')
+    df = pd.read_csv('helping_files/results/K_DNA-DNA_in_crowder_solutions.csv')
 
     df[['K', 'K_err']] = df['K'].str.split('±', expand=True)
     df[['D', 'D_err']] = df['D'].str.split('±', expand=True)
@@ -336,7 +335,7 @@ def refractive_index_of_crowder_solutions():
 
 def gibbs_free_energy_of_DNA_DNA_reaction_vs_crowder_weight_percent():
     # Load and process data
-    df = pd.read_csv('results/K_DNA-DNA_in_crowder_solutions.csv')
+    df = pd.read_csv('helping_files/results/K_DNA-DNA_in_crowder_solutions.csv')
     K_0 = unc.ufloat(1760000000, 311872000)  # Reference K
     df["K"] = df["K"].apply(uts.convert_to_ufloat)
     df["D"] = df["D"].apply(uts.convert_to_ufloat)
