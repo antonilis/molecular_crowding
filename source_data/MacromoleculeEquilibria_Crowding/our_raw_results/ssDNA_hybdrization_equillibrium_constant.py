@@ -8,7 +8,7 @@ from lmfit import Model
 # returns a dataframe with average RI values and related errors of PEG solutions
 def calculate_average_RI_with_error_of_sample():
     # Provide a csv. file as a source.
-    df = pd.read_csv('source_data/RI_of_PEG_solutions.csv')
+    df = pd.read_csv('RI_of_PEG_solutions.csv')
     names = ['EGly', 'PEG200', 'PEG400', 'PEG600', 'PEG1000', 'PEG1500', 'PEG3000', 'PEG6000', 'PEG12000', 'PEG20000',
              'PEG35000']
     data = {name: [] for name in names}  # Initialize a dictionary to store the data, where each key is a column name
@@ -82,7 +82,7 @@ def kappa_fitting():
     # returns crowders names from directory and allows to call csv files by crowders names
     crowders = []
     crowders_names = []
-    path = 'source_data/D_Na_and_D_crowder'
+    path = 'D_Na_and_D_crowder'
     files = os.listdir(path)
     for file in files:
         if file.endswith('.csv'):
@@ -134,7 +134,7 @@ def K_DNA_DNA_fitting():
     values = []  # crowder concentration
 
     # Loop through all files in the directory
-    for filename in os.listdir('source_data/DNA-DNA_countrate_vs_crowder_concentration'):
+    for filename in os.listdir('DNA-DNA_countrate_vs_crowder_concentration'):
         if filename.endswith(".csv"):
             name, value, base_name = extract_name_and_value_from_a_file(filename)
             if name and value:
@@ -143,7 +143,7 @@ def K_DNA_DNA_fitting():
                 values.append(float(value))
 
     for i in range(len(base_names)):
-        df = pd.read_csv(f'source_data/DNA-DNA_countrate_vs_crowder_concentration/{base_names[i]}.csv')
+        df = pd.read_csv(f'DNA-DNA_countrate_vs_crowder_concentration/{base_names[i]}.csv')
         df_RI = calculate_RI_slope_with_error()
         RI = values[i] * df_RI.at[names[i], 'slope'] + df_RI.at[names[i], 'intercept']  # refractive index of specific solution
         RI_water = 1.333
@@ -185,7 +185,8 @@ def K_DNA_DNA_fitting():
                     'name': base_names[i],
                     'crowder': names[i],
                     'wt_%': values[i],
-                    'K': f'{fitK1:.0f}±{fitK1err:.0f}',
+                    'K [M]': fitK1,
+                    'K error [M]':fitK1err,
                     'D': f"{df['D_[um^2/s]'][0]}±{df['D_err'][0]}"}
             else:
                 data_out = {
@@ -196,8 +197,71 @@ def K_DNA_DNA_fitting():
                     'D': None}
 
             K_results = pd.concat([K_results, pd.DataFrame([data_out])], ignore_index=True)
-            K_results.to_csv('results/K_DNA-DNA_in_crowder_solutions.csv', index=False)  # Save to a CSV file
     return K_results
+
+
+def format_df(df):
+
+    dat = df[['crowder', 'wt_%', 'K [M]', 'K error [M]']]
+
+    dat['sample'] = ['ssDNA_13bp'] * dat.shape[0]
+    dat['charge 1'] = dat['charge 2'] = [-13] * dat.shape[0]
+    dat['Rg 1 [nm]'] = dat['Rg 2 [nm]'] = [13*0.6/np.sqrt(12)] * dat.shape[0]
+    dat['T [K]'] = [298.15] * dat.shape[0]
+
+    dat['Na conc. [mM]'] = [35] * dat.shape[0]
+    dat['I [mM]'] = [20] * dat.shape[0]
+
+    data = uts.crowders_properties()['MW_[g/mol]']
+
+    df = pd.merge(dat, data, left_on='crowder', right_index=True)
+
+    df.dropna(inplace=True)
+
+    df = df.rename(columns={
+        "wt_%": "crowder wt. [%]",
+        "MW_[g/mol]": "molar mass [g/mol]"
+    })
+
+    crowders = df['crowder'].unique()
+
+    zero_df = pd.DataFrame({
+        'crowder': crowders,
+        'crowder wt. [%]': 0,
+        'K [M]': 1760000000,
+        'K error [M]': 311872000,
+        'sample': 'ssDNA_13bp',
+        'charge 1': -13,
+        'charge 2': -13,
+        'Rg 1 [nm]': 13 * 0.6 / np.sqrt(12),
+        'Rg 2 [nm]': 13 * 0.6 / np.sqrt(12),
+        'T [K]': 298.15,
+        'Na conc. [mM]': 35,
+        'I [mM]': 20
+    })
+
+    zero_df = zero_df.merge(
+        df[['crowder', 'molar mass [g/mol]']].drop_duplicates(),
+        on='crowder',
+        how='left'
+    )
+
+    df = pd.concat([df, zero_df], ignore_index=True)
+    return df
+
+def save_to_csv(df, saving_dierectory):
+
+    for crowder in df['crowder'].unique():
+
+        dat = df[df['crowder'] == crowder]
+
+        dat = dat.sort_values(by='crowder wt. [%]')
+
+        file_name = f'OriginalData_{crowder}.xlsx'
+
+        saving_path = os.path.join(saving_dierectory, file_name)
+
+        dat.to_excel(saving_path, index=False)
 
 
 
@@ -207,6 +271,12 @@ if __name__ == '__main__':
     # here powinna być jedna funkcja, robi csv-y
 
     results = K_DNA_DNA_fitting()
+
+    formated = format_df(results)
+
+    path = '..'
+
+    save_to_csv(formated, path)
 
 
 

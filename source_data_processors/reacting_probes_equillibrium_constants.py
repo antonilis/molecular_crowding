@@ -10,7 +10,8 @@ import numpy as np
 class EquillibriumConstants:
 
     def __init__(self, source_data_path):
-        self.reactions_equillibrium_constants = self.read_reactions_equillibrium_data(source_data_path)
+        self.raw_data = self.read_reactions_equillibrium_data(source_data_path)
+        self.analyzed_data = self.calculate_parabolic_fit()
 
     @staticmethod
     def calculate_solution_properties(data):
@@ -60,7 +61,7 @@ class EquillibriumConstants:
 
         # chi-square
         chi2 = np.sum(((y - y_fit) / y_err) ** 2)
-        dof = len(x) - 3  # 3 parametry: a, b, c
+        dof = len(x) - 3  # 3 parameters: a, b, c
         chi2_red = chi2 / dof if dof > 0 else np.nan
 
         ss_res = np.sum((y - y_fit) ** 2)
@@ -69,9 +70,9 @@ class EquillibriumConstants:
 
         return pd.Series(
             {
-                "a_exp": unc.ufloat(coefficients[0], errors[0]),
-                "b_exp": unc.ufloat(coefficients[1], errors[1]),
-                "c_exp": unc.ufloat(coefficients[2], errors[2]),
+                "a2_exp": unc.ufloat(coefficients[0], errors[0]),
+                "a1_exp": unc.ufloat(coefficients[1], errors[1]),
+                "a0_exp": unc.ufloat(coefficients[2], errors[2]),
                 "chi2": chi2,
                 "chi2_red": chi2_red,
                 "R2": r2
@@ -80,20 +81,20 @@ class EquillibriumConstants:
 
     @staticmethod
     def filter_quadratic_fits(dat):
-        filtering_mask = (dat['chi2_red'] > 0.3) & (dat['chi2_red'] < 10) & (dat['R2'] > 0.8)
+        filtering_mask = (dat['chi2_red'] > 0.2) & (dat['chi2_red'] < 10) & (dat['R2'] > 0.5) & (dat['a1_exp'] > 0) & (dat['a2_exp'] < 0)
 
         return dat[filtering_mask]
 
     def calculate_parabolic_fit(self):
-        df = self.reactions_equillibrium_constants.copy()
+        df = self.raw_data.copy()
 
         grouping_columns = ['source', 'sample', 'crowder']
 
         fitted = df.groupby(by=grouping_columns).apply(self.fit_quadratic).reset_index()
 
         merged = pd.merge(df, fitted, on=grouping_columns)
-        filtered = self.filter_quadratic_fits(merged)
+        #filtered = self.filter_quadratic_fits(merged)
 
-        return filtered
+        return merged
 
 
