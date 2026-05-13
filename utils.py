@@ -33,7 +33,7 @@ def calculate_hydrodynamic_radius(D):
 def convert_to_ufloat(value):
     if isinstance(value, str):  # Check if the value is a string
         # Normalize the string by replacing "±" and "+-" with spaces
-        value = value.replace('±', ' ').replace('+-', ' ')
+        value = value.replace('+/-', ' ').replace('+-', ' ').replace('±', ' ')
         parts = value.split()  # Split by whitespace
 
         # Check if we have two parts (nominal and uncertainty)
@@ -186,11 +186,10 @@ def logdef(x):
 # returns all properties of crowders, such as MW, No of monomers, Rg, Rh, etc.
 def crowders_properties():
     data = {
-        'MW_[g/mol]': [62.07, 106.12, 150.174, 200, 400, 600, 1000, 1500, 2000, 2050, 3000, 4600, 6000, 8000, 12000, 20000, 35000, 6000, 70000, 400000], # crowder molecular weight
-        'No_mono': [1, 2, 3, 4.131, 8.672, 13.212, 22.292, 33.643, 44.994, 67.695, 104.018, 135.800, 181.203, 272.009, 272.009, 453.620, 794.143, 37.005, 431.726, 1168.566]}
-    index = ["EGly", "diEGly", "triEGly", "PEG200", "PEG400", "PEG600", "PEG1000", "PEG1500", "PEG2000", "PEG2050", "PEG3000", "PEG4600", "PEG6000", "PEG8000","PEG12000", "PEG20000", "PEG35000", "Dextran6000", "Dextran70000", "Ficoll400000"]
+        'MW_[g/mol]': [62.07, 106.12, 150.174, 200, 400, 600, 1000, 1500, 2000, 2050, 3000, 4600, 6000, 8000, 12000, 20000, 35000]}
+    index = ["EGly", "diEGly", "triEGly", "PEG200", "PEG400", "PEG600", "PEG1000", "PEG1500", "PEG2000", "PEG2050", "PEG3000", "PEG4600", "PEG6000", "PEG8000","PEG12000", "PEG20000", "PEG35000"]
     value = pd.DataFrame(data, index=index)
-
+    value['No_mono'] = (value['MW_[g/mol]'] - 18.02)/ 44.05
     value['Rg_[nm]'] = 0.215 * value['MW_[g/mol]'] ** 0.583 / 10 # crowder radius of gyration
     value.loc['Dextran6000', 'Rg_[nm]'] = 1.75
     value.loc['Dextran70000', 'Rg_[nm]'] = 7.5

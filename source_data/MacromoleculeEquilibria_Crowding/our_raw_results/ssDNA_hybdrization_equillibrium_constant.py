@@ -4,6 +4,9 @@ import utils as uts
 import os
 from lmfit import Model
 
+AVOGADRO = 6.02e23
+RI_WATER = 1.333
+
 
 # returns a dataframe with average RI values and related errors of PEG solutions
 def calculate_average_RI_with_error_of_sample():
@@ -15,7 +18,8 @@ def calculate_average_RI_with_error_of_sample():
 
     for name in names:
         for i in range(0, len(df[f'{name}_wt_%'])):
-            one_sample = df.loc[i, f'{name}_RI_1':f'{name}_RI_4']  # Ensure columns are consecutively ordered in DataFrame
+            one_sample = df.loc[
+                i, f'{name}_RI_1':f'{name}_RI_4']  # Ensure columns are consecutively ordered in DataFrame
             average_RI_per_sample = np.average(one_sample)
             std_RI_per_sample = np.std(one_sample)
             data[name].append(f'{average_RI_per_sample:.5f}±{std_RI_per_sample:.5f}')
@@ -29,7 +33,8 @@ def calculate_average_RI_with_error_of_sample():
 def calculate_RI_slope_with_error():
     # Collect results in a list
     results = []
-    names = ['EGly', 'PEG200', 'PEG400', 'PEG600', 'PEG1000', 'PEG1500', 'PEG3000', 'PEG6000', 'PEG12000', 'PEG20000', 'PEG35000']
+    names = ['EGly', 'PEG200', 'PEG400', 'PEG600', 'PEG1000', 'PEG1500', 'PEG3000', 'PEG6000', 'PEG12000', 'PEG20000',
+             'PEG35000']
     RI_avg_dataframe = calculate_average_RI_with_error_of_sample()
 
     # Convert columns to `ufloat`
@@ -69,72 +74,86 @@ def extract_name_and_value_from_a_file(file_path):
     return None, None, None  # Return None for both if the filename doesn't match the expected format
 
 
-# equation to calculate κ of ion crowder interactions
-def equation_to_calculate_κ(wt_percent, MW, solution_density,  no_monomers, Na_D, PEG_self_D, Na_0):
-    mass = (wt_percent / 100) / (1 - (wt_percent / 100))
-    c_mono = (mass / MW) / ((mass + 1) / solution_density * 0.001) * no_monomers
-    kappa = (Na_D - Na_0) / (PEG_self_D - Na_0) / c_mono
-    return kappa.mean(), kappa.std()
+# --- Model definition (outside loop!) ---
+def K_binding_model(x, K, D, alfa, gamma, v0, n=1):
+    term = x / n + D + 1 / K
+    delta = term ** 2 - 4 * (x / n) * D
+    sqrt_delta = np.sqrt(delta)
+
+    binding = 0.5 * (term - sqrt_delta)
+
+    return alfa * v0 * (
+            D - binding
+    ) * (
+            1 + (gamma / alfa) * K * (x / n - binding)
+    )
 
 
-# calculates complexation constants of sodium ions by specific crowder per monomer
-def kappa_fitting():
-    # returns crowders names from directory and allows to call csv files by crowders names
-    crowders = []
-    crowders_names = []
-    path = 'D_Na_and_D_crowder'
-    files = os.listdir(path)
-    for file in files:
-        if file.endswith('.csv'):
-            file_path = os.path.join(path, file)
-            var_name = os.path.splitext(file)[0]
-            df = pd.read_csv(file_path)
-            globals()[var_name] = df
-            crowders.append(df)
-            crowders_names.append(var_name)
-
-    # Diffusion coeffcient of Na in buffer
-    Na_0 = EGly['D_Na_[um2/s]'][0]  # everywhere the same
-
-    value = uts.crowders_properties()
-    kappa_results = {}
-    kappa_errors = {}
-
-    # Loop through crowders and their names
-    for crowder, crowder_name in zip(crowders, crowders_names):
-        # Calculate kappa and kappa error
-        kappa, kappa_err = equation_to_calculate_κ(
-            crowder['wt_%'],
-            value.loc[crowder_name]['MW_[g/mol]'],
-            0.997 + value.loc[crowder_name]['d_coef'] * crowder['wt_%'], #density of specific crowder solution
-            value.loc[crowder_name]['No_mono'],
-            crowder['D_Na_[um2/s]'],
-            crowder['D_crowder_[um2/s]'],
-            Na_0
-        )
-        if crowder_name == 'EGly':  # divided by 2 because EGly has two 'monomers'
-            kappa_results[crowder_name] = f'{kappa / 2}±{kappa_err / 2}'
-        elif crowder_name == 'Dextran6000' or crowder_name == 'Dextran70000':  # divided by 5 because we assumed one Na+ per one oxygen atom'
-            kappa_results[crowder_name] = f'{kappa / 5}±{kappa_err / 5}'
-        elif crowder_name == 'Ficoll400000':  # divided by 5 because we assumed one Na+ per one oxygen atom'
-            kappa_results[crowder_name] = f'{kappa / 11}±{kappa_err / 11}' # divided by 11 because we assumed one Na+ per one oxygen atom'
-        else:
-            kappa_results[crowder_name] = f'{kappa}±{kappa_err}'
-
-    return kappa_results
+# --- Helpers ---
+def load_dataset(filepath):
+    return pd.read_csv(filepath)
 
 
-# calculates equilibrium constants of DNA-DNA interactions in the presence of crowders
-def K_DNA_DNA_fitting():
-    K_results = pd.DataFrame(columns=[
-        'name', 'crowder', 'wt_%', 'K', 'D'])
+def compute_refractive_index(value, name, df_RI):
+    return value * df_RI.at[name, 'slope'] + df_RI.at[name, 'intercept']
 
-    names = []  # crowder name
-    base_names = []  # file name
-    values = []  # crowder concentration
 
-    # Loop through all files in the directory
-    for filename in os.listdir('DNA-DNA_countrate_vs_crowder_concentration'):
+def compute_effective_donor_concentration(wt_percent, C_nominal=1e-8):
+    rho_water = 0.99707  # g/mL
+    rho_mix = 0.99707 + 0.0017441 * wt_percent
+
+    V_water = 0.2 / rho_water
+
+    m_mix = 0.2/(100 - wt_percent) * 100
+
+    V_mix = m_mix / rho_mix
+
+    volume_factor = V_mix / V_water
+
+    C_eff = C_nominal / volume_factor
+
+    return C_eff
+
+
+def compute_physical_parameters(df, value, RI):
+    z_correction = RI / RI_WATER
+    C_Don = compute_effective_donor_concentration(value, 1e-8)
+
+    # C_Don = 1e-8 * ((100 - value) / 100) # old way of doing stuff
+
+    alfa = df['a'].iloc[0]
+    gamma = alfa * df['y'].iloc[0]
+
+    v0 = AVOGADRO * 1e-16 * 10 * df['Vef_[fl]'].iloc[0] * z_correction
+
+    return alfa, gamma, v0, C_Don
+
+
+def fit_single_dataset(df, alfa, gamma, v0, C_Don):
+    x = df['ratio'] * C_Don
+    y = df['value']
+
+    model = Model(
+        lambda x, K, D: K_binding_model(x, K, D, alfa, gamma, v0)
+    )
+
+    model.set_param_hint('K', value=1e6, min=1e2, max=5e13)
+    model.set_param_hint('D', value=1e-8, min=1.1e-9, max=2e-8)
+
+    result = model.fit(y, x=x)
+
+    return {
+        'K': result.params['K'].value,
+        'K_err': result.params['K'].stderr,
+        'D_fit': result.params['D'].value,
+        'D_fit_err': result.params['D'].stderr
+    }
+
+
+def extract_metadata(directory):
+    names, base_names, values = [], [], []
+
+    for filename in os.listdir(directory):
         if filename.endswith(".csv"):
             name, value, base_name = extract_name_and_value_from_a_file(filename)
             if name and value:
@@ -142,75 +161,54 @@ def K_DNA_DNA_fitting():
                 base_names.append(base_name)
                 values.append(float(value))
 
-    for i in range(len(base_names)):
-        df = pd.read_csv(f'DNA-DNA_countrate_vs_crowder_concentration/{base_names[i]}.csv')
-        df_RI = calculate_RI_slope_with_error()
-        RI = values[i] * df_RI.at[names[i], 'slope'] + df_RI.at[names[i], 'intercept']  # refractive index of specific solution
-        RI_water = 1.333
-        z_correction = RI / RI_water
-        C_Don = 1e-8 * ((100 - values[i]) / 100)  # nM correction for PEG concentration in solution
-        alfa = df['a'][0]
-        gamma = alfa * df['y'][0]
-        v0 = 6.02 * 1e23 * 1e-16 * 10 * df['Vef_[fl]'][0] * z_correction
-        n = 1
-        x = df['ratio'] * C_Don
-        y = df['value']
-        xmin = df['ratio'].min() * C_Don
-        xmax = df['ratio'].max() * C_Don
-        xx = np.linspace(0, xmax, num=500)
+    return list(zip(base_names, names, values))
 
-        # equation to calculate K of DNA-DNA interactions
-        def K_fitting(x, K, D):
-            return alfa * v0 * (
-                        D - (0.5 * (x / n + D + 1 / K - np.sqrt(((-x / n - D - 1 / K) ** 2) - 4 * x / n * D)))) * (
-                        1 + (gamma / alfa) * K * (
-                            x / n - (0.5 * (x / n + D + 1 / K - np.sqrt(((-x / n - D - 1 / K) ** 2) - 4 * x / n * D)))))
 
-        # Fitting parameters
-        funmodel = Model(K_fitting)
-        funmodel.set_param_hint('K', value=1e6, min=1e2, max=5e13)
-        funmodel.set_param_hint('D', value=1e-8, min=1.1e-9, max=2e-8)
-        pars = funmodel.make_params()
-        result = funmodel.fit(y, x=x)
-        fitK1 = result.params['K'].value
-        fitK1err = result.params['K'].stderr
-        fitD1 = result.params['D'].value
-        fitD1err = result.params['D'].stderr
-        fitt1 = ((fitD1 * 1e9,) + (uts.logdef(fitK1)) + (gamma,))
+# --- Main function ---
+def K_DNA_DNA_fitting(data_dir='DNA-DNA_countrate_vs_crowder_concentration'):
+    results = []
 
-        # Saving data
-        if fitK1 and fitK1err and df['D_[um^2/s]'][0]:  # Ensure no invalid or empty values
-            if fitK1 > 100000:
-                data_out = {
-                    'name': base_names[i],
-                    'crowder': names[i],
-                    'wt_%': values[i],
-                    'K [M]': fitK1,
-                    'K error [M]':fitK1err,
-                    'D': f"{df['D_[um^2/s]'][0]}±{df['D_err'][0]}"}
-            else:
-                data_out = {
-                    'name': base_names[i],
-                    'crowder': names[i],
-                    'wt_%': values[i],
-                    'K': None,
-                    'D': None}
+    df_RI = calculate_RI_slope_with_error()
+    datasets = extract_metadata(data_dir)
 
-            K_results = pd.concat([K_results, pd.DataFrame([data_out])], ignore_index=True)
-    return K_results
+    for base_name, name, value in datasets:
+        filepath = os.path.join(data_dir, f"{base_name}.csv")
+        df = load_dataset(filepath)
+
+        # --- Physical parameters ---
+        RI = compute_refractive_index(value, name, df_RI)
+        alfa, gamma, v0, C_Don = compute_physical_parameters(df, value, RI)
+
+        # --- Fit ---
+        fit = fit_single_dataset(df, alfa, gamma, v0, C_Don)
+
+        result_row = {
+            'name': base_name,
+            'crowder': name,
+            'wt_%': value,
+            'K [M]': fit['K'],
+            'K error [M]': fit['K_err'],
+            'D_exp [um^2/s]': df['D_[um^2/s]'].iloc[0],
+            'D_err [um^2/s]': df['D_err'].iloc[0]
+        }
+        results.append(result_row)
+
+    return pd.DataFrame(results)
 
 
 def format_df(df):
-
     dat = df[['crowder', 'wt_%', 'K [M]', 'K error [M]']]
 
     dat['sample'] = ['ssDNA_13bp'] * dat.shape[0]
     dat['charge 1'] = dat['charge 2'] = [-13] * dat.shape[0]
-    dat['Rg 1 [nm]'] = dat['Rg 2 [nm]'] = [13*0.6/np.sqrt(12)] * dat.shape[0]
+    dat['Rg 1 [nm]'] = dat['Rg 2 [nm]'] = [13 * 0.6 / np.sqrt(12)] * dat.shape[0]
     dat['T [K]'] = [298.15] * dat.shape[0]
 
-    dat['Na conc. [mM]'] = [35] * dat.shape[0]
-    dat['I [mM]'] = [20] * dat.shape[0]
+    dat['Na conc. [mM]'] = dat["wt_%"].apply(
+        lambda x: compute_effective_donor_concentration(x, C_nominal=35)
+    )
+
+    dat['I [mM]'] = 1.38 * dat['Na conc. [mM]']
 
     data = uts.crowders_properties()['MW_[g/mol]']
 
@@ -237,7 +235,7 @@ def format_df(df):
         'Rg 2 [nm]': 13 * 0.6 / np.sqrt(12),
         'T [K]': 298.15,
         'Na conc. [mM]': 35,
-        'I [mM]': 20
+        'I [mM]': 1.38 * 35
     })
 
     zero_df = zero_df.merge(
@@ -249,10 +247,9 @@ def format_df(df):
     df = pd.concat([df, zero_df], ignore_index=True)
     return df
 
+
 def save_to_csv(df, saving_dierectory):
-
     for crowder in df['crowder'].unique():
-
         dat = df[df['crowder'] == crowder]
 
         dat = dat.sort_values(by='crowder wt. [%]')
@@ -264,22 +261,13 @@ def save_to_csv(df, saving_dierectory):
         dat.to_excel(saving_path, index=False)
 
 
-
 if __name__ == '__main__':
-
-
     # here powinna być jedna funkcja, robi csv-y
 
     results = K_DNA_DNA_fitting()
 
-    formated = format_df(results)
+    formated = format_df(results).sort_values(by=['crowder', 'crowder wt. [%]'])
 
     path = '..'
 
     save_to_csv(formated, path)
-
-
-
-
-
-

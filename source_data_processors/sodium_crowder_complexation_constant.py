@@ -113,7 +113,7 @@ class SodiumComplexation:
             x_data = data['concentration [M]'].values
             y_data, y_err = uts.get_float_uncertainty(data['D_Na_uf_[um2/s]'])
 
-            D_Na = data['D_Na_[um2/s] corr'].values
+            D_Na = 1425 #data['D_Na_[um2/s] corr'].values
             D_crowder, _ = uts.get_float_uncertainty(data['D_crowder_uf_[um2/s]'])
 
             res = least_squares(
@@ -219,3 +219,5 @@ if __name__ == "__main__":
     path = '../source_data/IonCrowderComplexation/raw_data'
 
     data = SodiumComplexation(path)
+
+    data.analyzed_data.to_csv('/home/User/Dokumenty/IChF/stała_równowagi_w_zatłoczeniu_pegami/helping_files/ssDNA_PEGs_interaction/')

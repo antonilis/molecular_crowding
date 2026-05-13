@@ -34,6 +34,8 @@ class EquillibriumConstants:
         files = os.listdir(path)
         files_no_txt = [file for file in files if file.endswith('xlsx')]
 
+        files_no_txt = [f for f in files_no_txt if 'OriginalData' in f]
+
         df_list = []
 
         for file in files_no_txt:

@@ -1,16 +1,31 @@
 from source_data_processors.reacting_probes_equillibrium_constants import EquillibriumConstants
 from source_data_processors.sodium_crowder_complexation_constant import SodiumComplexation
+from source_data_processors.sodium_dependency import SodiumDependency
+
 from calculations.equllibrium_constant_theoretical_dependency import TheoreticalModel
+
 
 
 class Data:
 
-    def __init__(self, source_equillbrium_constants_path, source_complexation_data_path):
+    def __init__(self, source_equillbrium_constants_path, source_complexation_data_path, source_sodium_dep):
         self.EquillbriumConstantsObj = EquillibriumConstants(source_equillbrium_constants_path)
         self.SodiumCrowderComplexationObj = SodiumComplexation(source_complexation_data_path)
-        self.theoretical_calculations = TheoreticalModel()
+        self.theoretical_calculations = TheoreticalModel() # probably wrong right now
+        self.SodiumDependencyObj = SodiumDependency(source_sodium_dep)
+
 
         self.data = self.merge_data()
+
+    def calculate_free_ions(self, df, col_c_Na, col_c_peg):
+
+        Bn = self.SodiumCrowderComplexationObj.n_complexation
+
+        c_free = df[col_c_Na]/1000/(Bn * df[col_c_peg] + 1) # Na+ in mM concentration
+
+        return c_free * 1000
+
+
 
     def merge_data(self):
         eq_data = self.EquillbriumConstantsObj.analyzed_data.copy()
@@ -19,6 +34,10 @@ class Data:
         theory_data = self.theoretical_calculations.compute_a1_a2_theory(eq_data.copy())
 
         final = self.theoretical_calculations.calculate_total_Gibbs_energy(theory_data.copy())
+
+        final['Na_free_[mM]'] = self.calculate_free_ions(final, 'Na conc. [mM]', 'concentration [M]')
+
+        final['dG_Na_[kJ/mol]'] = self.SodiumDependencyObj.calculate_dG(final['Na_free_[mM]'])
 
         return final
 
@@ -32,8 +51,9 @@ if __name__ == '__main__':
 
     equillibrium_constans_path = 'source_data/MacromoleculeEquilibria_Crowding'
     complexation_data_path = 'source_data/IonCrowderComplexation/raw_data'
+    sodium_path = 'source_data/IonStrengthDependency/Na+_FRET.csv'
 
-    data = Data(equillibrium_constans_path, complexation_data_path)
+    data = Data(equillibrium_constans_path, complexation_data_path, sodium_path)
 
     df = data.data.copy()
 
@@ -140,5 +160,6 @@ if __name__ == '__main__':
     #         verticalalignment='top',
     #         transform=plt.gca().transAxes
     #     )
-    #     plt.savefig(f'.\\plots\\equillibrium_constans_quadratic_dependency_fit\\{group_name}.png')
+    #     plt.savefig(f'./plots/equillibrium_constans_quadratic_dependency_fit/{group_name}.png')
+    #     plt.show()
     #     plt.close()
