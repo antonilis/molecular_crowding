@@ -24,6 +24,8 @@ class EquillibriumConstants:
 
         data['concentration [M]'] = data['crowder wt. [%]'] * data['density'] / data['MW_[g/mol]'] * 10
 
+        data['mass_concentration_[g/mL]'] = data['crowder wt. [%]'] * data['density'] / 100
+
         data['c*_[M]'] = data['c*_[g/cm3]'] / data['MW_[g/mol]'] * 10 ** 3
 
         data['c/c*'] = data['concentration [M]'] / data['c*_[M]']

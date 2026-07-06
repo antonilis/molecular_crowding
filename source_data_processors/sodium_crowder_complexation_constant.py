@@ -65,14 +65,19 @@ class SodiumComplexation:
 
         return df
 
-    def calculate_viscosity_correction(self, df):
-        # average diffusion coefficient of the peg
 
+
+    def calculate_viscosity_correction(self, df):
+
+        # Calculations taken from: http://dx.doi.org/10.1016/j.polymer.2014.07.029
+        
+        # average diffusion coefficient of the peg
         rh = uts.calculate_hydrodynamic_radius(self.D_Na0)
 
         b = 1.75
 
         df['ksi'] = df['Rg_[nm]'] * (df['mass concentration [g/cm3]'] / df['c*_[g/cm3]']) ** (-0.75)
+        df['Reff'] = ((df['Rh_[nm]'] ** 2 * rh ** 2) / (df['Rh_[nm]'] ** 2 + rh ** 2)) ** (0.5)
 
         def viscosity_correction(row):
 
@@ -214,10 +219,3 @@ def plot_fits(df):
 
 
 
-
-if __name__ == "__main__":
-    path = '../source_data/IonCrowderComplexation/raw_data'
-
-    data = SodiumComplexation(path)
-
-    data.analyzed_data.to_csv('/home/User/Dokumenty/IChF/stała_równowagi_w_zatłoczeniu_pegami/helping_files/ssDNA_PEGs_interaction/')

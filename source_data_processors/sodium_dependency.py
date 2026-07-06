@@ -43,7 +43,7 @@ class SodiumDependency:
 
         return popt_eff, pcov_eff
 
-    def calculate_dG(self, CNa):
+    def calculate_sodium_dG(self, CNa):
 
         deltaG = self.model(CNa, self.popt_eff[0], self.popt_eff[1], self.popt_eff[2])
 
