@@ -25,36 +25,34 @@ class SodiumDependency:
         return df
 
     @staticmethod
-    def model(x, A, B, k):
+    def model(x, A, B):
 
         if any(
                 hasattr(i, "nominal_value") and hasattr(i, "std_dev")
                 for i in x
         ):
-            result = A + B * unp.exp(-k * x)
+            result = A - B * unp.sqrt(x)
         else:
-            result = A + B * np.exp(-k * x)
+            result = A - B * np.sqrt(x)
 
         return result
 
+
     def fit_phenomenological_equation(self):
         popt_eff, pcov_eff = curve_fit(self.model, self.raw_data['C_Na+_[mM]'], self.raw_data['dG_[kJ/mol]'],
-                                       p0=[-140, 100, 0.2])
+                                       p0=[-140, 100])
 
         return popt_eff, pcov_eff
 
     def calculate_sodium_dG(self, CNa):
 
-        deltaG = self.model(CNa, self.popt_eff[0], self.popt_eff[1], self.popt_eff[2])
+        deltaG = self.model(CNa, self.popt_eff[0], self.popt_eff[1])
 
 
         return deltaG
 
 
-
-
 if '__main__' == __name__:
 
    path = '../source_data/IonStrengthDependency/Na+_FRET.csv'
-
    ionic_strength =SodiumDependency(path)

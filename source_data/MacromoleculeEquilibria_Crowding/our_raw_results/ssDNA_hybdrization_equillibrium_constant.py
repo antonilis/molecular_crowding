@@ -262,7 +262,6 @@ def save_to_csv(df, saving_dierectory):
 
 
 if __name__ == '__main__':
-    # here powinna być jedna funkcja, robi csv-y
 
     results = K_DNA_DNA_fitting()
 

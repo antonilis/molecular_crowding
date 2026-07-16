@@ -2,11 +2,9 @@ import os
 import pandas as pd
 import uncertainties as unc
 from scipy.optimize import least_squares
-from scipy.optimize import curve_fit
 import utils as uts
 import numpy as np
-from uncertainties import umath
-import matplotlib.pyplot as plt
+
 
 
 class SodiumComplexation:
@@ -185,37 +183,4 @@ class SodiumComplexation:
         self.n_complexation = n_uf
 
         return n_uf
-
-def plot_fits(df):
-    crowders = df['crowder'].unique()
-    for crowder in crowders:
-        crowder_data = df[df['crowder'] == crowder]  # Filter data for this specific crowder
-
-        x = crowder_data['concentration [M]']
-        y, y_err = uts.get_float_uncertainty(crowder_data['D_Na_[um2/s]'])
-
-        D_Na = crowder_data['D_Na_[um2/s] corr']
-
-        D_crowder, err = uts.get_float_uncertainty(crowder_data['D_crowder_[um2/s]'])
-
-        alpha = crowder_data['n Beta [1/M]'].iloc[0]
-
-        # Interpolation grid for smooth plotting
-        x_fit = np.linspace(min(x), max(x), 200)
-        D_crowder_fit = np.interp(x_fit, x, D_crowder)  # interpolate B to match x_fit
-
-        D_Na_fit = np.interp(x_fit, x, D_Na)
-
-        y_fit = model_for_fit(x_fit, D_Na_fit, D_crowder_fit, alpha)
-
-        plt.plot(x, y, 'v', label='Experimental point')
-
-        plt.plot(x_fit, y_fit, label='fit')
-        plt.title(crowder)
-        plt.legend()
-        plt.savefig(os.path.join('../plots', f"{crowder}.png"))
-        plt.close()
-
-
-
 

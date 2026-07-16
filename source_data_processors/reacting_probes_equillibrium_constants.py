@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-
 import utils as uts
 import uncertainties as unc
 from uncertainties import umath
@@ -97,7 +96,7 @@ class EquillibriumConstants:
         fitted = df.groupby(by=grouping_columns).apply(self.fit_quadratic).reset_index()
 
         merged = pd.merge(df, fitted, on=grouping_columns)
-        #filtered = self.filter_quadratic_fits(merged)
+        #filtered = self.filter_quadratic_fits(merged) optional filtering to only good fits, for now it is turned  off
 
         return merged
 
