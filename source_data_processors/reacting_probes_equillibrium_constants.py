@@ -56,7 +56,7 @@ class EquillibriumConstants:
         x = np.array(data['concentration [M]'], dtype=np.float64)
         y, y_err = uts.get_float_uncertainty(data['K_uf [M]'].apply(lambda x: umath.log(x)))
 
-        coefficients, cov_matrix = np.polyfit(x, y, 2, w=1 / y_err, cov=True)
+        coefficients, cov_matrix = np.polyfit(x, y, 2, w=1 / y_err, cov='unscaled')
 
         errors = np.sqrt(np.diag(cov_matrix))
 

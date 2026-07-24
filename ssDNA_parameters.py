@@ -1,27 +1,18 @@
 import numpy as np
-import utils as uts
-from scipy.interpolate import interp1d
-from scipy.integrate import cumulative_trapezoid
-from uncertainties import umath
-from uncertainties import unumpy as unp
-
-from scipy.integrate import simpson
 
 
 class ssDNAParameters:
 
     def __init__(self, bp_num):
 
-
         self.bp_num = bp_num
-         # physical constants
         self.ssDNA_radius, self.ssDNA_parameters = self.calculate_ssDNA_radius()  # number of baise pairs
 
 
     @staticmethod
     def ssDNA_cylinder_params(N):
 
-        b0, Lp = 0.63, 3
+        b0, Lp = 0.63, 3   # source: https://doi.org/10.1016/S0006-3495(04)74308-8
         
         L = b0 * N
 
