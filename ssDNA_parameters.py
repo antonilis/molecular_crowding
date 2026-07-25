@@ -21,7 +21,7 @@ class ssDNAParameters:
     @staticmethod
     def ssDNA_cylinder_params(N):
 
-        b0, Lp = 0.63, 3
+        b0, Lp = 0.63, 3 # source: https://doi.org/10.1016/S0006-3495(04)74308-8
         
         L = b0 * N
 
