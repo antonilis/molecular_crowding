@@ -1,8 +1,16 @@
 import os
+import sys
+from pathlib import Path
 import pandas as pd
 import uncertainties as unc
 from scipy.optimize import least_squares
-import utils as uts
+
+try:
+    import utils as uts
+except ModuleNotFoundError:
+    # Allow running this file directly by adding the project root to sys.path.
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    import utils as uts
 import numpy as np
 
 
@@ -116,7 +124,7 @@ class SodiumComplexation:
             x_data = data['concentration [M]'].values
             y_data, y_err = uts.get_float_uncertainty(data['D_Na_uf_[um2/s]'])
 
-            D_Na = 1425 #data['D_Na_[um2/s] corr'].values
+            D_Na = 1425.622636
             D_crowder, _ = uts.get_float_uncertainty(data['D_crowder_uf_[um2/s]'])
 
             res = least_squares(

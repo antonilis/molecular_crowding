@@ -1,7 +1,16 @@
+from pathlib import Path
+import sys
 import numpy as np
 import pandas as pd
-import utils as uts
 import os
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent.parent.parent
+
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+import utils as uts
 from lmfit import Model
 
 AVOGADRO = 6.02e23
@@ -11,7 +20,7 @@ RI_WATER = 1.333
 # returns a dataframe with average RI values and related errors of PEG solutions
 def calculate_average_RI_with_error_of_sample():
     # Provide a csv. file as a source.
-    df = pd.read_csv('RI_of_PEG_solutions.csv')
+    df = pd.read_csv(SCRIPT_DIR / 'RI_of_PEG_solutions.csv')
     names = ['EGly', 'PEG200', 'PEG400', 'PEG600', 'PEG1000', 'PEG1500', 'PEG3000', 'PEG6000', 'PEG12000', 'PEG20000',
              'PEG35000']
     data = {name: [] for name in names}  # Initialize a dictionary to store the data, where each key is a column name
@@ -91,7 +100,7 @@ def K_binding_model(x, K, D, alfa, gamma, v0, n=1):
 
 # --- Helpers ---
 def load_dataset(filepath):
-    return pd.read_csv(filepath)
+    return pd.read_csv(SCRIPT_DIR / filepath)
 
 
 def compute_refractive_index(value, name, df_RI):
@@ -151,6 +160,7 @@ def fit_single_dataset(df, alfa, gamma, v0, C_Don):
 
 
 def extract_metadata(directory):
+    directory = SCRIPT_DIR / directory
     names, base_names, values = [], [], []
 
     for filename in os.listdir(directory):
@@ -267,6 +277,6 @@ if __name__ == '__main__':
 
     formated = format_df(results).sort_values(by=['crowder', 'crowder wt. [%]'])
 
-    path = '..'
+    path = SCRIPT_DIR.parent
 
     save_to_csv(formated, path)
