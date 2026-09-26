@@ -8,7 +8,7 @@ from main_data_processor import Data
 
 equillibrium_constans_path = 'source_data/MacromoleculeEquilibria_Crowding'
 complexation_data_path = 'source_data/IonCrowderComplexation/raw_data'
-sodium_path = 'source_data/IonStrengthDependency/Na+_FRET.csv'
+sodium_path = 'source_data/IonStrengthDependency/Na_FRET.csv'
 
 data = Data(equillibrium_constans_path, complexation_data_path, sodium_path)
 

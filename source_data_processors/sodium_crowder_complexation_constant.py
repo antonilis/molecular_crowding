@@ -111,20 +111,30 @@ class SodiumComplexation:
         return (model - y) / y_err
 
     def equillibrium_constant_fit(self, df):
-        nBeta_col = []
-        chi2_col = []
-        redchi2_col = []
-        r2_col = []
+        fit_results = {}
 
-        crowders = df['crowder'].unique()
-
-        for crowder in crowders:
+        for crowder in df['crowder'].unique():
             data = df[df['crowder'] == crowder]
+
+            # The buffer row contains no crowder, so it constrains nothing in the
+            # complexation model and is left out of the fit.
+            data = data[
+                (data['concentration [M]'].astype(float) > 0)
+                & (data['wt_%'].astype(float) > 0)
+            ]
+
+            if len(data) < 2:
+                continue
 
             x_data = data['concentration [M]'].values
             y_data, y_err = uts.get_float_uncertainty(data['D_Na_uf_[um2/s]'])
 
-            D_Na = 1425.622636
+            # Free sodium is already slowed down by the nanoviscosity of the crowder
+            # solution, so the concentration-dependent corrected diffusivity is used
+            # here rather than the single value measured in buffer. Using the buffer
+            # value instead attributes the viscous slowdown to complexation and
+            # overestimates n*beta.
+            D_Na = data['D_Na_[um2/s] corr'].values
             D_crowder, _ = uts.get_float_uncertainty(data['D_crowder_uf_[um2/s]'])
 
             res = least_squares(
@@ -135,7 +145,7 @@ class SodiumComplexation:
 
             alpha_fit = res.x[0]
 
-            # obliczanie błędu
+            # obliczanie bledu
             chi2 = 2 * res.cost
             dof = len(y_data) - len(res.x)
             sigma2 = chi2 / dof
@@ -152,17 +162,20 @@ class SodiumComplexation:
             r2 = 1 - ss_res / ss_tot
             redchi2 = chi2 / dof
 
-            nBeta_col.extend([alpha_uf] * len(data))
-            chi2_col.extend([chi2] * len(data))
-            redchi2_col.extend([redchi2] * len(data))
-            r2_col.extend([r2] * len(data))
+            fit_results[crowder] = (alpha_uf, chi2, redchi2, r2)
 
-        df['n Beta [1/M]'] = nBeta_col
-        df['chi2'] = chi2_col
-        df['redchi2'] = redchi2_col
-        df['R^2'] = r2_col
+        # The fitted value of a crowder is attached to all of its rows, including the
+        # buffer row that was excluded from the fit itself.
+        for position, column in enumerate(
+            ['n Beta [1/M]', 'chi2', 'redchi2', 'R^2']
+        ):
+            df[column] = df['crowder'].map(
+                lambda name: fit_results[name][position]
+                if name in fit_results else np.nan
+            )
 
         return df
+
 
     def analyze_raw_data(self):
 

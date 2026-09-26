@@ -72,5 +72,5 @@ class SodiumDependency:
 
 if '__main__' == __name__:
 
-   path = '../source_data/IonStrengthDependency/K_vs_K+_and_Na+_FRET.csv'
+   path = '../source_data/IonStrengthDependency/Na_FRET.csv'
    ionic_strength =SodiumDependency(path)

@@ -15,7 +15,7 @@ class ssDNAParameters:
 
         self.bp_num = bp_num
          # physical constants
-        self.ssDNA_radius, self.ssDNA_parameters = self.calculate_ssDNA_radius()  # number of baise pairs
+        self.ssDNA_parameters = self.ssDNA_cylinder_params(self.bp_num)  # number of baise pairs
 
 
     @staticmethod
@@ -29,7 +29,6 @@ class ssDNAParameters:
         Ree2 = 2 * Lp * L * (1 - (Lp / L) * (1 - np.exp(-L / Lp)))
         Ree = np.sqrt(Ree2)
 
-        # Rg^2 dla WLC (dokładny wzór)
         Rg2 = (Lp * L) / 3 - (Lp ** 2 / 3) * (1 - np.exp(-L / Lp))
         Rg = np.sqrt(Rg2)
 
@@ -47,14 +46,7 @@ class ssDNAParameters:
             "Cylinder_volume_nm3": V
         }
 
-    def calculate_ssDNA_radius(self):
 
-        ssDNA_parameters = self.ssDNA_cylinder_params(self.bp_num)
-
-        ssDNA_R = (3 * ssDNA_parameters['Cylinder_volume_nm3']/(4 * np.pi)) ** (1/3)  # radius in nm
-        
-        return ssDNA_R, ssDNA_parameters
-        
 
 
 

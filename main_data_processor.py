@@ -22,7 +22,7 @@ class Data:
 
         self.EquillbriumConstantsObj = EquillibriumConstants(source_equillbrium_constants_path)  # Here are done all the calculation for derivation of the ssDNA hybrydyzation reaction
         self.SodiumCrowderComplexationObj = SodiumComplexation(source_complexation_data_path) # Here are calculation regarding the sodium complexation
-        self.DepletionObj = ssDNAParameters(13)  # Here are ssDNA WCM size parameters, for 13 bp
+        self.ssDNA_dimensions = ssDNAParameters(13)  # Here are ssDNA WCM size parameters, for 13 bp
         self.SodiumDependencyObj = SodiumDependency(source_sodium_dep) # Here we read how the ssDNA eq. const. depends on the sodium concentration
 
         self.data = self.process_data()
@@ -50,6 +50,6 @@ class Data:
 if __name__ == '__main__':
     equillibrium_constans_path = 'source_data/MacromoleculeEquilibria_Crowding'
     complexation_data_path = 'source_data/IonCrowderComplexation/raw_data'
-    sodium_path = 'source_data/IonStrengthDependency/Na+_FRET.csv'
+    sodium_path = 'source_data/IonStrengthDependency/Na_FRET.csv'
 
     data = Data(equillibrium_constans_path, complexation_data_path, sodium_path)
