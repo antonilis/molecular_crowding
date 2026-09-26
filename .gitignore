@@ -24,3 +24,9 @@ Thumbs.db
 # Artefacts of running the notebooks on Windows, where './plots/name.png' was
 # created as one file whose name contains literal backslashes.
 .\\plots\\*
+
+# Exploratory analyses and scratch notebooks that the manuscript does not build on.
+/helping_files/
+
+# Papers collected while writing. Not ours to redistribute.
+/literature/
