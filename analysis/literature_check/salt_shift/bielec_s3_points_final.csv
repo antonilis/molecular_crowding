@@ -1,0 +1,36 @@
+crowder,Na_mM,log10K,src,u_read
+Dextran 40k,10.0,7.37,auto,0.02
+Dextran 40k,15.0,7.619,auto,0.02
+Dextran 40k,30.0,8.327,auto,0.02
+Dextran 40k,50.0,8.86,occluded by Dextran 70k; manual,0.1
+Dextran 70k,10.0,7.556,auto,0.02
+Dextran 70k,15.0,7.887,auto,0.02
+Dextran 70k,20.0,7.914,auto,0.02
+Dextran 70k,30.0,8.523,auto,0.02
+Dextran 70k,50.0,8.921,auto,0.02
+Ethylene Glycol,10.0,6.751,auto,0.02
+Ethylene Glycol,20.0,7.128,auto,0.02
+Ethylene Glycol,30.0,7.42,partially occluded; partial blob,0.05
+Ethylene Glycol,50.0,7.69,partially occluded; partial blob,0.05
+Ethylene Glycol,75.0,7.917,auto,0.02
+Ethylene Glycol,100.0,7.977,auto,0.02
+Ethylene Glycol,125.0,8.268,auto,0.02
+Ficoll 400,10.0,7.6,occluded by Dextran 70k; manual,0.1
+Ficoll 400,15.0,8.03,partially occluded; partial blob,0.05
+Ficoll 400,20.0,8.185,auto,0.02
+Ficoll 400,30.0,8.69,auto,0.02
+Ficoll 400,50.0,8.85,occluded; manual,0.1
+Glycerol,10.0,6.205,auto,0.02
+Glycerol,20.0,6.92,auto,0.02
+Glycerol,30.0,7.172,auto,0.02
+Glycerol,50.0,8.046,auto,0.02
+Glycerol,75.0,8.748,auto,0.02
+Glycerol,100.0,9.529,auto,0.02
+Glycerol,125.0,9.344,auto,0.02
+PEG 400,10.0,6.57,auto,0.02
+PEG 400,20.0,7.318,auto,0.02
+PEG 400,30.0,7.543,auto,0.02
+PEG 400,50.0,7.834,auto,0.02
+PEG 400,75.0,8.225,auto,0.02
+PEG 400,100.0,8.768,auto,0.02
+PEG 400,125.0,9.026,auto,0.02

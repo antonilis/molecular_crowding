@@ -1,0 +1,14 @@
+Kilburn2013 MgCl2: -ΔΔG/RT=4.3, n=5.0 -> Δln c_m=0.86 (czynnik 2.36)
+Kilburn2013 NaCl: -ΔΔG/RT=1.4, n=1.0 -> Δln c_m=1.40 (czynnik 4.06)
+Kilburn2013 NaCl: -ΔΔG/RT=1.4, n=1.5 -> Δln c_m=0.93 (czynnik 2.54)
+Kilburn2010 obs Δln c_m = 1.2 ; z aktywności MgCl2: 0.036
+Desai2014 Δln c_m = 0.31 ; po korekcie objętości: 0.17
+Paudel2014 docking: Δln K_Mg = 1.93 (x6.9)
+Paudel2014 activity: Δln K_Mg = 1.39 (x4.0)
+Paudel2018 activity: Δln K_Mg = 0.94 (x2.5)
+Paudel2018 N-state: Δln K_Mg = 0.52 (x1.7)
+Hong2005 urea: (dlnK/dm)_m=-1.7, korekta SK*dln a/dm=-0.34 -> (dlnK/dm)_a=-2.0; |korekta|/|obs|=20%
+Hong2005 GB: (dlnK/dm)_m=2.1, korekta SK*dln a/dm=-0.37 -> (dlnK/dm)_a=1.7; |korekta|/|obs|=18%
+Lambert2010 A-riboswitch: SK=-4.03, dSK/dm=0.9 -> wzgl. zmiana SK na 1 m TMAO = 22%
+Lambert2010 tar-tar*: SK=-2.13, dSK/dm=0.38 -> wzgl. zmiana SK na 1 m TMAO = 18%
+Lambert2010 TLR: SK=-3.99, dSK/dm=1.0 -> wzgl. zmiana SK na 1 m TMAO = 25%

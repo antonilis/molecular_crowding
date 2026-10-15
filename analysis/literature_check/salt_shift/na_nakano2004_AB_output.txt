@@ -1,0 +1,37 @@
+ln(c_hi/c_lo) = 2.125
+
+=== Nakano 2004 SI Tab. S1, 25 C, PEG 200  (T = 298.15 K, RT = 0.5925 kcal/mol)
+ wt%  dlnK(0.122M)    dlnK(1.022M)    diff(hi-lo)      S_sec(x)        phi_A(lo)  phi_A(hi)  [phi = -dlnK/S_sec(0)]
+   0   +0.00+/-1.43   +0.00+/-0.95   +0.00+/-0.00   +0.79+/-0.57    -0.00     -0.00
+  10   -1.01+/-1.07   -2.36+/-0.75   -1.35+/-1.31   +0.16+/-0.22    +1.28     +2.98
+  20   -2.36+/-1.13   -4.22+/-0.84   -1.86+/-1.41   -0.08+/-0.34    +2.98     +5.31
+  30   -4.05+/-1.13   -6.08+/-0.75   -2.03+/-1.36   -0.16+/-0.29    +5.10     +7.65
+  40   -5.06+/-1.32   -7.43+/-0.84   -2.36+/-1.57   -0.32+/-0.46    +6.38     +9.35
+  50   -8.27+/-1.22   -8.95+/-0.95   -0.68+/-1.55   +0.48+/-0.45   +10.41    +11.27
+ d S_sec / d wt% = -0.0062 +/- 0.0097  (B predicts 0)
+ per water activity: dlnK/dln aw  (= -Delta n_w^app)  at 0.122 M | 1.022 M; and dln aw hi/lo
+   10%:   84.4 |  159.7   dln aw: -0.0120 | -0.0148  ratio hi/lo 1.23; ratio dlnK hi/lo 2.33
+   20%:   84.1 |  142.1   dln aw: -0.0281 | -0.0297  ratio hi/lo 1.06; ratio dlnK hi/lo 1.79
+   30%:   96.2 |  130.4   dln aw: -0.0421 | -0.0466  ratio hi/lo 1.11; ratio dlnK hi/lo 1.50
+   40%:   99.3 |  125.4   dln aw: -0.0510 | -0.0592  ratio hi/lo 1.16; ratio dlnK hi/lo 1.47
+   50%:  116.6 |  120.4   dln aw: -0.0709 | -0.0743  ratio hi/lo 1.05; ratio dlnK hi/lo 1.08
+
+=== Ghosh 2020 SI Tab. S5, 37 C, PEG 200  (T = 310.15 K, RT = 0.6163 kcal/mol)
+ wt%  dlnK(0.122M)    dlnK(1.022M)    diff(hi-lo)      S_sec(x)        phi_A(lo)  phi_A(hi)  [phi = -dlnK/S_sec(0)]
+   0   +0.00+/-1.38   +0.00+/-0.92   +0.00+/-0.00   +0.23+/-0.55    -0.00     -0.00
+  10   -1.78+/-1.03   -1.78+/-0.73   +0.00+/-1.26   +0.23+/-0.22    +7.79     +7.79
+  20   -3.41+/-1.09   -3.57+/-0.81   -0.16+/-1.36   +0.15+/-0.32   +14.88    +15.59
+  30   -4.71+/-1.09   -5.35+/-0.73   -0.65+/-1.31   -0.08+/-0.28   +20.55    +23.38
+  40   -5.84+/-1.27   -6.81+/-0.81   -0.97+/-1.50   -0.23+/-0.45   +25.51    +29.76
+ d S_sec / d wt% = -0.0137 +/- 0.0122  (B predicts 0)
+ per water activity: dlnK/dln aw  (= -Delta n_w^app)  at 0.122 M | 1.022 M; and dln aw hi/lo
+   10%:  160.7 |  122.4   dln aw: -0.0111 | -0.0146  ratio hi/lo 1.31; ratio dlnK hi/lo 1.00
+   20%:  107.8 |  121.5   dln aw: -0.0316 | -0.0294  ratio hi/lo 0.93; ratio dlnK hi/lo 1.05
+   30%:  114.8 |  115.0   dln aw: -0.0410 | -0.0466  ratio hi/lo 1.14; ratio dlnK hi/lo 1.14
+   40%:  115.8 |  114.2   dln aw: -0.0504 | -0.0597  ratio hi/lo 1.18; ratio dlnK hi/lo 1.17
+
+If the S_sec change were entirely an A-type shift: phi = -(S(x)-S(0))/(dS/dlnc)
+  dS/dln c = -0.5: phi(40 wt%, 25 C) = -2.22; phi(40 wt%, 37 C) = -0.92
+  dS/dln c = -1.0: phi(40 wt%, 25 C) = -1.11; phi(40 wt%, 37 C) = -0.46
+  dS/dln c = -1.7: phi(40 wt%, 25 C) = -0.65; phi(40 wt%, 37 C) = -0.27
+  Vertical part left after removing such a shift (25 C, 40 wt%, at 0.122 M): H = dlnK - (-phi*S(0))

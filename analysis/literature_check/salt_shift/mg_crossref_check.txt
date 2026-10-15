@@ -1,0 +1,59 @@
+OK  Lambert D., Draper D. | Effects of Osmolytes on RNA Secondary and Tertiary Structure Stabilities and RNA-Mg2+ Interactions | Journal of Molecular Biology 370, 993-1005 (2007) | DOI 10.1016/j.jmb.2007.03.080
+OK  Kilburn D., Roh J., Guo L., Briber R., Woodson S. | Molecular Crowding Stabilizes Folded RNA Structure by the Excluded Volume Effect | Journal of the American Chemical Society 132, 8690-8696 (2010) | DOI 10.1021/ja101500g
+OK  Kilburn D., Roh J., Behrouzi R., Briber R., Woodson S. | Crowders Perturb the Entropy of RNA Energy Landscapes to Favor Folding | Journal of the American Chemical Society 135, 10055-10063 (2013) | DOI 10.1021/ja4030098
+OK  Desai R., Kilburn D., Lee H., Woodson S. | Increased Ribozyme Activity in Crowded Solutions | Journal of Biological Chemistry 289, 2972-2977 (2014) | DOI 10.1074/jbc.m113.527861
+OK  Lee H., Kilburn D., Behrouzi R., Briber R., Woodson S. | Molecular crowding overcomes the destabilizing effects of mutations in a bacterial ribozyme | Nucleic Acids Research 43, 1170-1176 (2014) | DOI 10.1093/nar/gku1335
+OK  Kilburn D., Behrouzi R., Lee H., Sarkar K., Briber R., Woodson S. | Entropic stabilization of folded RNA in crowded solutions measured by SAXS | Nucleic Acids Research , gkw597 (2016) | DOI 10.1093/nar/gkw597
+OK  Strulson C., Yennawar N., Rambo R., Bevilacqua P. | Molecular Crowding Favors Reactivity of a Human Ribozyme Under Physiological Ionic Conditions | Biochemistry 52, 8187-8197 (2013) | DOI 10.1021/bi400816s
+OK  Strulson C., Boyer J., Whitman E., Bevilacqua P. | Molecular crowders and cosolutes promote folding cooperativity of RNA under physiological ionic conditions | RNA 20, 331-347 (2014) | DOI 10.1261/rna.042747.113
+OK  Leamy K., Yennawar N., Bevilacqua P. | Cooperative RNA Folding under Cellular Conditions Arises From Both Tertiary Structure Stabilization and Secondary Structure Destabilization | Biochemistry 56, 3422-3433 (2017) | DOI 10.1021/acs.biochem.7b00325
+OK  Paudel B., Rueda D. | Molecular
+Crowding Accelerates Ribozyme Docking and
+Catalysis | Journal of the American Chemical Society 136, 16700-16703 (2014) | DOI 10.1021/ja5073146
+OK  Paudel B., Fiorini E., Börner R., Sigel R., Rueda D. | Optimal molecular crowding accelerates group II intron folding and maximizes catalysis | Proceedings of the National Academy of Sciences 115, 11917-11922 (2018) | DOI 10.1073/pnas.1806685115
+OK  Nakano S., Karimata H., Kitagawa Y., Sugimoto N. | Facilitation of RNA Enzyme Activity in the Molecular Crowding Media of Cosolutes | Journal of the American Chemical Society 131, 16881-16888 (2009) | DOI 10.1021/ja9066628
+OK  Kaur J., Jain R., Roychowdhury S., Roy R., Chattopadhyay K., Roy I. | Influence of Magnesium Ions and Crowding Agents on Structure and Stability of RNA Aptamers | Biochemistry 64, 1233-1243 (2025) | DOI 10.1021/acs.biochem.4c00468
+OK  Ge X., Xu J. | Macromolecular crowding effects on transcription and translation are regulated by free magnesium ion | Biotechnology and Applied Biochemistry 67, 117-122 (2019) | DOI 10.1002/bab.1827
+OK  Lambert D., Leipply D., Draper D. | The Osmolyte TMAO Stabilizes Native RNA Tertiary Structures in the Absence of Mg2+: Evidence for a Large Barrier to Folding from Phosphate Dehydration | Journal of Molecular Biology 404, 138-157 (2010) | DOI 10.1016/j.jmb.2010.09.043
+OK  Leipply D., Draper D. | Dependence of RNA Tertiary Structural Stability on Mg<sup>2+</sup> Concentration: Interpretation of the Hill Equation and Coefficient | Biochemistry 49, 1843-1853 (2010) | DOI 10.1021/bi902036j
+OK  Grilley D., Soto A., Draper D. | Mg
+                    <sup>2+</sup>
+                    –RNA interaction free energies and their relationship to the folding of RNA tertiary structures | Proceedings of the National Academy of Sciences 103, 14003-14008 (2006) | DOI 10.1073/pnas.0606409103
+OK  Draper D. | Folding of RNA tertiary structure: Linkages between backbone phosphates, ions, and water | Biopolymers 99, 1105-1113 (2013) | DOI 10.1002/bip.22249
+OK  Hong J., Capp M., Saecker R., Record M. | Use of Urea and Glycine Betaine To Quantify Coupled Folding and Probe the Burial of DNA Phosphates in Lac Repressor−Lac Operator Binding | Biochemistry 44, 16896-16911 (2005) | DOI 10.1021/bi0515218
+OK  Kontur W., Saecker R., Davis C., Capp M., Record M. | Solute Probes of Conformational Changes in Open Complex (RP<sub>o</sub>) Formation by <i>Escherichia coli</i> RNA Polymerase at the λP<sub>R</sub> Promoter:  Evidence for Unmasking of the Active Site in the Isomerization Step and for Large-Scale Coupled Folding in the Subsequent Conversion to RP<sub>o</sub> | Biochemistry 45, 2161-2177 (2006) | DOI 10.1021/bi051835v
+OK  Vander Meulen K., Saecker R., Record M. | Formation of a Wrapped DNA–Protein Interface: Experimental Characterization and Analysis of the Large Contributions of Ions and Water to the Thermodynamics of Binding IHF to H′ DNA | Journal of Molecular Biology 377, 9-27 (2008) | DOI 10.1016/j.jmb.2007.11.104
+OK  Ha J., Capp M., Hohenwalter M., Baskerville M., Record M. | Thermodynamic stoichiometries of participation of water, cations and anions in specific and non-specific binding of lac repressor to DNA | Journal of Molecular Biology 228, 252-264 (1992) | DOI 10.1016/0022-2836(92)90504-d
+OK  Hong J., Capp M., Anderson C., Saecker R., Felitsky D., Anderson M., Record M. | Preferential Interactions of Glycine Betaine and of Urea with DNA:  Implications for DNA Hydration and for Effects of These Solutes on DNA Stability | Biochemistry 43, 14744-14758 (2004) | DOI 10.1021/bi049096q
+OK  Knowles D., LaCroix A., Deines N., Shkel I., Record M. | Separation of preferential interaction and excluded volume effects on DNA duplex and hairpin stability | Proceedings of the National Academy of Sciences 108, 12699-12704 (2011) | DOI 10.1073/pnas.1103382108
+OK  Spink C., Chaires J. | Effects of Hydration, Ion Release, and Excluded Volume on the Melting of Triplex and Duplex DNA | Biochemistry 38, 496-508 (1998) | DOI 10.1021/bi9820154
+OK  Nordstrom L., Clark C., Andersen B., Champlin S., Schwinefus J. | Effect of Ethylene Glycol, Urea, and N-Methylated Glycines on DNA Thermal Stability:  The Role of DNA Base Pair Composition and Hydration | Biochemistry 45, 9604-9614 (2006) | DOI 10.1021/bi052469i
+OK  Karimata H., Nakano S., Sugimoto N. | Effects of Polyethylene Glycol on DNA Duplex Stability at Different NaCl Concentrations | Bulletin of the Chemical Society of Japan 80, 1987-1994 (2007) | DOI 10.1246/bcsj.80.1987
+OK  Nakano S., Wu L., Oka H., Karimata H., Kirihata T., Sato Y., Fujii S., Sakai H., Kuwahara M., Sawai H., Sugimoto N. | Conformation and the sodium ion condensation on DNA and RNA structures in the presence of a neutral cosolute as a mimic of the intracellular media | Molecular BioSystems 4, 579-588 (2008) | DOI 10.1039/b718806d
+OK  Markarian M., Schlenoff J. | Effect of Molecular Crowding and Ionic Strength on the Isothermal Hybridization of Oligonucleotides | The Journal of Physical Chemistry B 114, 10620-10627 (2010) | DOI 10.1021/jp103213w
+OK  Goobes R., Kahana N., Cohen O., Minsky A. | Metabolic Buffering Exerted by Macromolecular Crowding on DNA−DNA Interactions:  Origin and Physiological Significance | Biochemistry 42, 2431-2440 (2003) | DOI 10.1021/bi026775x
+OK  Zimmerman S., Harrison B. | Macromolecular crowding increases binding of DNA polymerase to DNA: an adaptive effect. | Proceedings of the National Academy of Sciences 84, 1871-1875 (1987) | DOI 10.1073/pnas.84.7.1871
+OK  Zimmerman S., Trach S. | Macromolecular crowding extends the range of conditions under which DNA polymerase is functional | Biochimica et Biophysica Acta (BBA) - Gene Structure and Expression 949, 297-304 (1988) | DOI 10.1016/0167-4781(88)90155-8
+OK  Cayley S., Record M. | Large changes in cytoplasmic biopolymer concentration with osmolality indicate that macromolecular crowding may regulate protein–DNA interactions and growth rate in osmotically stressed <i>Escherichia coli</i> K‐12 | Journal of Molecular Recognition 17, 488-496 (2004) | DOI 10.1002/jmr.695
+OK  Richey B., Cayley D., Mossing M., Kolka C., Anderson C., Farrar T., Record M. | Variability of the intracellular ionic environment of Escherichia coli. Differences between in vitro and in vivo effects of ion concentrations on protein-DNA interactions and gene expression. | Journal of Biological Chemistry 262, 7157-7164 (1987) | DOI 10.1016/s0021-9258(18)48218-x
+OK  Sidorova N., Rau D. | Linkage of EcoRI dissociation from its specific DNA recognition site to water activity, salt concentration, and pH: separating their roles in specific and non-specific binding | Journal of Molecular Biology 310, 801-816 (2001) | DOI 10.1006/jmbi.2001.4781
+OK  Fried M., Stickle D., Smirnakis K., Adams C., MacDonald D., Lu P. | Role of Hydration in the Binding of lac Repressor to DNA | Journal of Biological Chemistry 277, 50676-50682 (2002) | DOI 10.1074/jbc.m208540200
+OK  Vossen K., Wolz R., Daugherty M., Fried M. | Role of Macromolecular Hydration in the Binding of the<i>Escherichia coli</i>Cyclic AMP Receptor to DNA | Biochemistry 36, 11640-11647 (1997) | DOI 10.1021/bi971193e
+OK  Jiao M., Li H., Chen J., Minton A., Liang Y. | Attractive Protein-Polymer Interactions Markedly Alter the Effect of Macromolecular Crowding on Protein Association Equilibria | Biophysical Journal 99, 914-923 (2010) | DOI 10.1016/j.bpj.2010.05.013
+OK  Bielec K., Kowalski A., Bubak G., Witkowska Nery E., Hołyst R. | Ion Complexation Explains Orders of Magnitude Changes in the Equilibrium Constant of Biochemical Reactions in Buffers Crowded by Nonionic Compounds | The Journal of Physical Chemistry Letters 13, 112-117 (2021) | DOI 10.1021/acs.jpclett.1c03596
+OK  Mikles D., Bhat V., Schuchardt B., McDonald C., Farooq A. | Effect of osmolytes on the binding of <scp>EGR</scp>1 transcription factor to <scp>DNA</scp> | Biopolymers 103, 74-87 (2014) | DOI 10.1002/bip.22556
+OK 10.1021/acs.biochem.7b00325 | Biochemistry 56 27 3422-3433 [2017, 7, 11]
+OK 10.1073/pnas.1806685115 | Proceedings of the National Academy of Sciences 115 47 11917-11922 [2018, 11, 20]
+OK 10.1016/j.jmb.2010.09.043 | Journal of Molecular Biology 404 1 138-157 [2010, 11]
+OK 10.1021/bi051835v | Biochemistry 45 7 2161-2177 [2006, 2, 1]
+OK 10.1016/j.jmb.2007.11.104 | Journal of Molecular Biology 377 1 9-27 [2008, 3]
+OK 10.1002/j.1460-2075.1995.tb07109.x | The EMBO Journal 14 6 1257-1263 [1995, 3, 1]
+OK 10.1093/nar/gkw597 | Nucleic Acids Research None None gkw597 [2016, 7, 4]
+OK 10.1021/bi902036j | Biochemistry 49 9 1843-1853 [2010, 3, 9]
+OK 10.1073/pnas.0606409103 | Proceedings of the National Academy of Sciences 103 38 14003-14008 [2006, 9, 19]
+OK 10.1002/bip.22249 | Biopolymers 99 12 1105-1113 [2013, 12]
+OK 10.1021/acs.biochem.4c00468 | Biochemistry 64 6 1233-1243 [2025, 3, 18]
+OK 10.1002/bab.1827 | Biotechnology and Applied Biochemistry 67 1 117-122 [2020, 1]
+OK 10.1093/nar/gku1335 | Nucleic Acids Research 43 2 1170-1176 [2015, 1, 30]
+OK 10.1021/ja4030098 | Journal of the American Chemical Society 135 27 10055-10063 [2013, 7, 10]
+OK 10.1074/jbc.m113.527861 | Journal of Biological Chemistry 289 5 2972-2977 [2014, 1]

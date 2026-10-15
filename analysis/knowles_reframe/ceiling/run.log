@@ -1,0 +1,138 @@
+/media/dysk/IChF/stała_równowagi_w_zatłoczeniu_pegami/.venv/lib/python3.12/site-packages/uncertainties/core.py:1024: UserWarning: Using UFloat objects with std_dev==0 may give unexpected results.
+  warn("Using UFloat objects with std_dev==0 may give unexpected results.")
+/media/dysk/IChF/stała_równowagi_w_zatłoczeniu_pegami/.venv/lib/python3.12/site-packages/uncertainties/core.py:1024: UserWarning: Using UFloat objects with std_dev==0 may give unexpected results.
+  warn("Using UFloat objects with std_dev==0 may give unexpected results.")
+/media/dysk/IChF/stała_równowagi_w_zatłoczeniu_pegami/.venv/lib/python3.12/site-packages/uncertainties/core.py:1024: UserWarning: Using UFloat objects with std_dev==0 may give unexpected results.
+  warn("Using UFloat objects with std_dev==0 may give unexpected results.")
+/media/dysk/IChF/stała_równowagi_w_zatłoczeniu_pegami/.venv/lib/python3.12/site-packages/uncertainties/core.py:1024: UserWarning: Using UFloat objects with std_dev==0 may give unexpected results.
+  warn("Using UFloat objects with std_dev==0 may give unexpected results.")
+/media/dysk/IChF/stała_równowagi_w_zatłoczeniu_pegami/.venv/lib/python3.12/site-packages/uncertainties/core.py:1024: UserWarning: Using UFloat objects with std_dev==0 may give unexpected results.
+  warn("Using UFloat objects with std_dev==0 may give unexpected results.")
+/media/dysk/IChF/stała_równowagi_w_zatłoczeniu_pegami/.venv/lib/python3.12/site-packages/uncertainties/core.py:1024: UserWarning: Using UFloat objects with std_dev==0 may give unexpected results.
+  warn("Using UFloat objects with std_dev==0 may give unexpected results.")
+/media/dysk/IChF/stała_równowagi_w_zatłoczeniu_pegami/.venv/lib/python3.12/site-packages/uncertainties/core.py:1024: UserWarning: Using UFloat objects with std_dev==0 may give unexpected results.
+  warn("Using UFloat objects with std_dev==0 may give unexpected results.")
+/media/dysk/IChF/stała_równowagi_w_zatłoczeniu_pegami/.venv/lib/python3.12/site-packages/uncertainties/core.py:1024: UserWarning: Using UFloat objects with std_dev==0 may give unexpected results.
+  warn("Using UFloat objects with std_dev==0 may give unexpected results.")
+108 titrations refitted with the original script
+simulation: 14144 fits in 41 s
+OK 119
+KCStabMedian 57
+KCmax 185
+KCmaxBounded 185
+KCminUnb nan
+Kmax 2.07
+Kzero 1.76
+SKexp 2.95
+SKlocalReport 3.47
+SKspline 3.57
+SKsplineErr 0.13
+SKsplineHi 3.69
+SKsplineLo 3.45
+cFortyExp +3.7
+cFortySpl +4.3
+ceilKCmed 262
+ceilMaxLong 11.50
+ceilMedAll 10.50
+ceilMedLong 10.50
+ceilMinLong 8.75
+dChiSixFreeD 931
+dChiSixFreeO 369
+dChiSixFreeT 931
+fraccexp 20
+fraccspl 22
+fraccsplUnc 1
+fraceexp -36
+fracespl -37
+hiOverKMedBounded 0.20
+loNinetyFiveMedStab 9.65
+logKStabErrMed 0.10
+logKStabMean 9.82
+logKStabSD 0.23
+mND -0.269
+mNDErr 0.018
+mNO -0.289
+mNOErr 0.020
+mNT -0.269
+mNTErr 0.018
+nAboveCeil 1
+nAboveCeilStabLong 1
+nAll 104
+nBoundedStab 77
+nCensPts 0
+nKCtwenty 68
+nKCtwentyP 68
+nLoUnb 0
+nNotGlobal 0
+nRep 8
+nSim 14144
+nStabLong 59
+nStabLongKC 55
+nStabLongP 59
+nTitr 108
+nUpUnb 0
+nUpUnbKCtwenty 0
+nUpUnbStabLong 0
+prhoN 0.04
+prhoWt 0.00
+repBroSixSone -0.260
+repBroSixStwo +0.185
+repBroStwo +nan
+repEKnowles -0.319
+repFracMeanc 19.8
+repFracMeane -36.3
+repNullE -0.485
+repPlateauKnowlesPred -0.140
+repRestMean -9.3
+restFracCens 0
+restMeanAll -9.3
+restMeanBounded -9.3
+restMeanCens nan
+restSDBounded 2.3
+rhoN +0.27
+rhoWt -0.36
+sOneSixD -0.282
+sOneSixDErr 0.024
+sOneSixO -0.260
+sOneSixOErr 0.022
+sOneSixT -0.282
+sOneSixTErr 0.024
+sTwoFreeD +0.102
+sTwoFreeDErr 0.006
+sTwoFreeO +0.100
+sTwoFreeOErr 0.007
+sTwoFreeT +0.102
+sTwoFreeTErr 0.006
+sTwoSixD +0.202
+sTwoSixDErr 0.026
+sTwoSixO +0.185
+sTwoSixOErr 0.023
+sTwoSixT +0.202
+sTwoSixTErr 0.026
+simMedEleven -0.02
+simMedNine +0.00
+simMedTen +0.00
+simMedTenHalf -0.00
+simRecMedAtTwelve 12.45
+simWidEleven 1.34
+simWidNine 0.04
+simWidTen 0.15
+simWidTenHalf 0.31
+xminHiD 7.5
+xminHiO 7.6
+xminHiT 7.5
+xminLoD 5.5
+xminLoO 5.6
+xminLoT 5.5
+xminMedD 7.0
+xminMedO 7.0
+xminMedT 7.0
+xsHiD 1.1
+xsHiO 1.3
+xsHiT 1.1
+xsLoD -8.0
+xsLoO -1.6
+xsLoT -8.0
+xsMedD 0.5
+xsMedO 0.3
+xsMedT 0.5

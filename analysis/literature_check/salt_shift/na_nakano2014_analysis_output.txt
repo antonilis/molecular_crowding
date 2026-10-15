@@ -1,0 +1,12 @@
+none: slope 1.82 (authors 1.8); quadratic coeff +0.34 -> dS/dlog c = +0.68 (local S at log c=-1.7: 1.22, at 0: 2.38)
+PEG200 20wt%: slope 1.40 (none over same range: 1.82)
+   Delta logK vs none at 0.02 M: -0.51, 0.05 M: -0.59, 0.10 M: -0.53, 0.20 M: -0.73, 0.50 M: -0.96, 0.70 M: -1.17, 1.00 M: -1.14
+PEG8000 20wt%: slope 1.14 (none over same range: 1.54)
+   Delta logK vs none at 0.02 M: +0.77, 0.05 M: +0.55, 0.10 M: +0.56, 0.20 M: +0.32
+DMF 20wt%: slope 1.51 (none over same range: 1.82)
+   Delta logK vs none at 0.02 M: -2.05, 0.05 M: -2.18, 0.10 M: -1.92, 0.20 M: -2.07, 0.50 M: -2.40, 0.70 M: -2.52, 1.00 M: -2.55
+FA 20wt%: slope 1.49 (none over same range: 2.05)
+   Delta logK vs none at 0.50 M: -1.88, 0.70 M: -2.02, 1.00 M: -2.05
+PEG8000 vs none (0.02-0.2 M fits): slopes 1.14 vs 1.54; extrapolated crossing at log c = 0.19 (1.54 M)
+A-model phi for PEG8000 (phi = -Delta logK / S_none): -0.50, -0.36, -0.36, -0.21 (log10 units of c; x2.303 for ln)
+A cannot change the slope where the buffer line is straight: observed slope change -0.40 over 0.02-0.2 M while buffer curvature over that range is small.

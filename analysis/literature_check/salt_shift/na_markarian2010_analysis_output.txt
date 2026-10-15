@@ -1,0 +1,17 @@
+Fig 6: linear fits ln K = a + S*ln a_Na (35-mer, 67 C); unc. read +/-0.01 (x), +/-0.03 (y)
+   0 wt%: n= 9, range ln a -3.68..-2.06, S = 2.85 +/- 0.12, lnK(-3.5) = 13.16, lnK(-2.2) = 16.87, quad coeff = -0.34
+   1 wt%: n=10, range ln a -3.86..-2.09, S = 2.95 +/- 0.18, lnK(-3.5) = 13.31, lnK(-2.2) = 17.14, quad coeff = -0.77
+   5 wt%: n= 9, range ln a -3.92..-2.14, S = 2.75 +/- 0.23, lnK(-3.5) = 13.18, lnK(-2.2) = 16.75, quad coeff = -1.10
+  10 wt%: n= 9, range ln a -3.86..-2.22, S = 2.33 +/- 0.21, lnK(-3.5) = 13.68, lnK(-2.2) = 16.71, quad coeff = -0.94
+  20 wt%: n= 9, range ln a -3.86..-2.26, S = 1.59 +/- 0.13, lnK(-3.5) = 14.05, lnK(-2.2) = 16.12, quad coeff = -0.63
+  30 wt%: n= 9, range ln a -3.67..-2.06, S = 1.19 +/- 0.04, lnK(-3.5) = 14.13, lnK(-2.2) = 15.67, quad coeff = -0.14
+  Delta lnK (fit PEG - fit 0%) at ln a = -3.7, -3.0, -2.2 and crossover ln a*:
+    1%: +0.12 +0.19 +0.26   ln a* = -5.02 (a* = 0.007)
+    5%: +0.03 -0.04 -0.13   ln a* = -3.39 (a* = 0.034)
+   10%: +0.62 +0.25 -0.16   ln a* = -2.51 (a* = 0.081)
+   20%: +1.13 +0.25 -0.76   ln a* = -2.80 (a* = 0.061)
+   30%: +1.29 +0.13 -1.20   ln a* = -2.92 (a* = 0.054)
+Fig 7A: S_K = dpsi*N/2 ; dS_K/dwt from linear fit
+  35-mer (67 C): S_K(0%) = 2.96, S_K(30%) = 1.35, dS_K/d(wt%) = -0.0596 per wt%
+  25-mer (55 C): S_K(0%) = 4.25, S_K(30%) = 2.39, dS_K/d(wt%) = -0.0646 per wt%
+  15-mer (35 C): S_K(0%) = 2.62, S_K(30%) = 1.79, dS_K/d(wt%) = -0.0248 per wt%

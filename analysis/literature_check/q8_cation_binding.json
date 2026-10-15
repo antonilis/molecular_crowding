@@ -1,0 +1,106 @@
+{
+ "RT_cal": 592.5,
+ "bn_ise_EG_upper": 0.03887474637132474,
+ "crown_kappa_per_EO": {
+  "Na+": 1.0515955741336556,
+  "K+": 17.85865508729343
+ },
+ "crown_mu_per_EO": {
+  "Na+": -623.0703776741909,
+  "K+": -10581.253139221359
+ },
+ "points": [
+  {
+   "label": "Knowles 2015 VPO: Na$^+$",
+   "env": "dil",
+   "kind": "thermo",
+   "lo": 2.66,
+   "hi": 6.66
+  },
+  {
+   "label": "Knowles 2015 VPO: K$^+$",
+   "env": "dil",
+   "kind": "thermo",
+   "lo": -0.17999999999999972,
+   "hi": 6.62
+  },
+  {
+   "label": "Knowles 2015 VPO: NaCl (sól)",
+   "env": "dil",
+   "kind": "thermo",
+   "lo": 39.199999999999996,
+   "hi": 45.4
+  },
+  {
+   "label": "Knowles 2011 VPO: KCl (sól)",
+   "env": "dil",
+   "kind": "thermo",
+   "lo": 32.4,
+   "hi": 37.8
+  },
+  {
+   "label": "Annunziata: NaCl (sól), dyfuzja",
+   "env": "dil",
+   "kind": "thermo",
+   "lo": 47.0,
+   "hi": 49.9
+  },
+  {
+   "label": "Morales 2020 ISE: NaClO$_4$ (sól)",
+   "env": "conc",
+   "kind": "thermo",
+   "lo": -65.4,
+   "hi": -60.2
+  },
+  {
+   "label": "Bielec 2022 ISE: EG 40%",
+   "env": "conc",
+   "kind": "thermo",
+   "lo": -23.033287225009907,
+   "hi": 0.0
+  },
+  {
+   "label": "nasze DOSY: EG",
+   "env": "conc",
+   "kind": "local",
+   "lo": -71.1,
+   "hi": 111.39
+  },
+  {
+   "label": "nasze DOSY: PEG 200",
+   "env": "conc",
+   "kind": "local",
+   "lo": -22.22770260989011,
+   "hi": 12.476194368131866
+  },
+  {
+   "label": "nasze DOSY: PEG $\\geq$1000",
+   "env": "conc",
+   "kind": "local",
+   "lo": -99.54,
+   "hi": -32.5875
+  },
+  {
+   "label": "Rodrigues 2008: por, 1--4 M KCl",
+   "env": "pore",
+   "kind": "local",
+   "lo": -39.993750000000006,
+   "hi": -17.775
+  },
+  {
+   "label": "Bielec 2022: $\\kappa$=0.49 z K(c)",
+   "env": "conc",
+   "kind": "infer",
+   "lo": -290.325,
+   "hi": -290.325
+  }
+ ],
+ "reconcile": {
+  "mu_excl_per_ion_cal": 25.617005944874798,
+  "kappa_coord_allowed_by_VPO_split": 0.03537047416856506,
+  "nuW_gross_needed_for_DOSY_kappa": {
+   "0.055": 3.4896349789029535,
+   "0.168": 9.762264978902953
+  }
+ }
+}
