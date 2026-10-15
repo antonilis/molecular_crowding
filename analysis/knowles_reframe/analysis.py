@@ -342,6 +342,27 @@ ax.set_title("Wiązanie Na$^+$ potrzebne do wyjaśnienia ΔΔG(EG, 40 wt%) kana�
 fig.savefig(FIG / "t1_required_binding.pdf")
 plt.close(fig)
 
+# Figure 2b (simple report): observed EG destabilisation vs the most the measured Na+ binding could explain
+eg = data[data.crowder == "EGly"].sort_values("wt")
+wg = np.linspace(0, eg.wt.max(), 200)
+cg = molar_chain(wg, "EGly")
+bn_up = max(0.0, t1["EGly"]["bn"] + 2 * t1["EGly"]["bn_mc"])
+fig, ax = plt.subplots(figsize=(5.2, 3.3))
+ax.fill_between(wg, 0, ddg_salt_cons(bn_up, cg), color="#55a868", alpha=.35, lw=0,
+                label="wiązanie Na$^+$ wg DOSY (od zera do górnej granicy)")
+ax.plot(wg, ddg_salt_cons(t1["EGly"]["bn_code"], cg), "--", color="#4c72b0",
+        label="wiązanie Na$^+$ z Tabeli S5 manuskryptu")
+ax.errorbar(eg.wt, eg.ddG, np.hypot(eg.sddG, sddG0), fmt="o", ms=4, color="k",
+            label="zmierzone osłabienie dupleksu")
+ax.axhline(0, color="0.6", lw=.6)
+ax.set_xlabel("EG [wt%]")
+ax.set_ylabel("ΔΔG [kJ/mol]  (> 0: mniej dupleksu)")
+ax.set_title("EG: ile z osłabienia dupleksu może wyjaśnić wiązanie Na$^+$?", fontsize=9)
+ax.legend(frameon=False, fontsize=7, loc="upper left")
+fig.tight_layout()
+fig.savefig(FIG / "t1_salt_vs_obs.pdf")
+plt.close(fig)
+
 # ======================================================================================
 # TEZA 3 part 1 (needed by TEZA 2): monomer m-values and smooth fits
 # ======================================================================================
